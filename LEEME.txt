@@ -1,0 +1,32 @@
+Proyecto Poli - Restaurante (Java + MySQL)
+
+ESTRUCTURA
+  entidades/    clases del modelo (campos originales + getters/setters)
+  servicios/    lógica de negocio con acceso a MySQL por JDBC (reglas de las historias de usuario)
+  util/         conexión a la BD (Conexion, Bd), constantes, validaciones, seguridad
+  app/Main.java demostración del flujo completo contra la base de datos
+  sql/          script de la base de datos y scripts auxiliares
+  lib/          aquí va el driver JDBC de MySQL (.jar)
+  db.properties configuración de la conexión (usuario / contraseña)
+
+PASOS
+ 1. Crear la base de datos: ejecutar sql/BaseDatosPoliRestaurante.sql en MySQL Workbench
+    (o:  mysql -u root -p < sql/BaseDatosPoliRestaurante.sql).
+ 2. Descargar el driver JDBC de MySQL y copiar el .jar a lib/  (ver lib/LEEME.txt).
+ 3. Editar db.properties con su usuario y contraseña de MySQL.
+ 4. Compilar (JDK 11 o superior):
+      Linux/Mac:  mkdir out && javac -encoding UTF-8 -cp "lib/*" -d out entidades/*.java servicios/*.java util/*.java app/*.java
+      Windows:    mkdir out && javac -encoding UTF-8 -cp "lib/*" -d out entidades\*.java servicios\*.java util\*.java app\*.java
+ 5. Ejecutar la demo (desde esta carpeta, para que lea db.properties):
+      Linux/Mac:  java -cp "out:lib/*" app.Main
+      Windows:    java -cp "out;lib/*" app.Main
+
+La conexión también se puede configurar con variables de entorno (DB_URL, DB_USER,
+DB_PASSWORD) o con -Ddb.url=... -Ddb.user=... -Ddb.password=...
+
+NOTAS
+ - El script SQL original NO se modifica. Al conectarse por primera vez, el programa agrega
+   (solo si no existen): la columna "activo" en Mesero/PersonalCocina/Administrador, la columna
+   "enviado_cocina" en Pedido y la tabla HistorialEstado (ver sql/extension_modelo.sql).
+ - Main.java inserta datos de ejemplo en la base; sql/reiniciar_datos.sql los borra.
+ - Las contraseñas se guardan con hash (PBKDF2), nunca en texto plano.

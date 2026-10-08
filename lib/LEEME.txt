@@ -1,0 +1,4 @@
+Coloque aquí el driver JDBC de MySQL (un archivo .jar), por ejemplo:
+  mysql-connector-j-8.x.x.jar
+Descarga: https://dev.mysql.com/downloads/connector/j/  (opción "Platform Independent")
+o desde Maven Central: com.mysql:mysql-connector-j
