@@ -7,12 +7,7 @@ import java.util.Scanner;
 import servicios.*;
 import util.Constantes;
 
-/**
- * CRUD por consola: crear, listar, actualizar y eliminar registros
- * usando los servicios que ya existen (con todas sus validaciones).
- *
- * Ejecutar:  java -cp "out:lib/*" app.MenuConsola      (Windows: "out;lib/*")
- */
+
 public class MenuConsola {
 
     private static final Scanner in = new Scanner(System.in);
