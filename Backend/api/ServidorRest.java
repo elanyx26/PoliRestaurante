@@ -24,11 +24,13 @@ public class ServidorRest {
         registrar(servidor, "/api/meseros", Usuarios.meseros());
         registrar(servidor, "/api/cocina", Usuarios.cocina());
         registrar(servidor, "/api/roles", new RolRecurso());
+        registrar(servidor, "/api/pedidos", new PedidoRecurso());
+        registrar(servidor, "/api/detalles", new DetallePedidoRecurso());
         servidor.setExecutor(Executors.newFixedThreadPool(8));
         servidor.start();
 
         System.out.println("PoliRestaurante REST escuchando en http://localhost:" + puerto + "/api");
-        System.out.println("Recursos: categorias, productos, mesas, administradores, meseros, cocina, roles");
+        System.out.println("Recursos: categorias, productos, mesas, administradores, meseros, cocina, roles, pedidos, detalles");
     }
 
     private static void registrar(HttpServer s, String ruta, com.sun.net.httpserver.HttpHandler h) {
