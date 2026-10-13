@@ -52,7 +52,7 @@ public class MenuConsola {
         }
     }
 
-    // ------------------------------------------------------------ infraestructura
+    
 
     private static void submenu(String titulo, Runnable crear, Runnable listar,
                                 Runnable actualizar, Runnable eliminar) {
@@ -71,7 +71,6 @@ public class MenuConsola {
         }
     }
 
-    /** Captura los errores de validación / BD para que el programa no se caiga. */
     private static void ejecutar(Runnable accion) {
         try {
             accion.run();
@@ -99,7 +98,7 @@ public class MenuConsola {
         }
     }
 
-    /** Al actualizar: si el usuario solo presiona Enter se conserva el valor actual. */
+   
     private static String leerTextoOpcional(String campo, String actual) {
         String s = leerTexto(campo + " [" + (actual == null ? "" : actual) + "]: ");
         return s.isEmpty() ? actual : s;
@@ -119,7 +118,7 @@ public class MenuConsola {
 
     private static void ok(String msg) { System.out.println("[OK] " + msg); }
 
-    // ------------------------------------------------------------ Administrador
+    
 
     private static void crearAdmin() {
         Administrador a = new Administrador();
@@ -154,7 +153,7 @@ public class MenuConsola {
         ok("Operación realizada.");
     }
 
-    // ------------------------------------------------------------ Mesero
+    
 
     private static void crearMesero() {
         Mesero m = new Mesero();
@@ -189,8 +188,7 @@ public class MenuConsola {
         ok("Operación realizada.");
     }
 
-    // ------------------------------------------------------------ Personal de cocina
-
+    
     private static void crearCocina() {
         PersonalCocina c = new PersonalCocina();
         c.setNombre(leerTexto("Nombre: "));
@@ -224,8 +222,7 @@ public class MenuConsola {
         ok("Operación realizada.");
     }
 
-    // ------------------------------------------------------------ Mesa
-
+    
     private static void crearMesa() {
         Mesa m = new Mesa();
         m.setNumero(leerEntero("Número de mesa: "));
@@ -260,8 +257,7 @@ public class MenuConsola {
         ok("Operación realizada.");
     }
 
-    // ------------------------------------------------------------ Categoría
-
+    
     private static void crearCategoria() {
         Categoria c = new Categoria();
         c.setNombre(leerTexto("Nombre de la categoría: "));
@@ -291,8 +287,7 @@ public class MenuConsola {
         ok("Operación realizada.");
     }
 
-    // ------------------------------------------------------------ Producto
-
+   
     private static void crearProducto() {
         Producto p = new Producto();
         p.setNombre(leerTexto("Nombre: "));
@@ -333,7 +328,7 @@ public class MenuConsola {
         ok("Operación realizada (si ya se usó en pedidos queda como 'No disponible').");
     }
 
-    // ------------------------------------------------------------ Pedidos
+    
 
     private static void menuPedidos() {
         while (true) {
