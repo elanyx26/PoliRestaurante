@@ -26,8 +26,6 @@ import util.Validar;
  * Ciclo de vida del pedido (tablas Pedido e HistorialEstado).
  * HU1 a HU4, HU9 a HU11, HU13, HU15 a HU17, HU20 a HU26.
  *
- * Flujo de estados: Pendiente -> En preparación -> Listo -> Entregado -> Cerrado
- * (o Cancelado desde cualquier estado anterior a Entregado).
  *
  * Mientras un pedido no se envíe a cocina (enviarACocina) se pueden agregar,
  * editar o quitar sus productos y notas.
