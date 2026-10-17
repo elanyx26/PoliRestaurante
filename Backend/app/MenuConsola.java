@@ -36,13 +36,19 @@ public class MenuConsola {
             switch (op) {
                 case 1: submenu("Administradores", MenuConsola::crearAdmin, MenuConsola::listarAdmin,
                         MenuConsola::actualizarAdmin, MenuConsola::eliminarAdmin,
-                        () -> verEnlaces(DependenciasService.ADMINISTRADOR, "del administrador")); break;
+                        () -> verEnlaces(DependenciasService.ADMINISTRADOR, "del administrador"),
+                        () -> cambiarEstado("del administrador", adminSrv::obtenerPorId, adminSrv::estaActivo,
+                                adminSrv::activar, adminSrv::desactivar)); break;
                 case 2: submenu("Meseros", MenuConsola::crearMesero, MenuConsola::listarMeseros,
                         MenuConsola::actualizarMesero, MenuConsola::eliminarMesero,
-                        () -> verEnlaces(DependenciasService.MESERO, "del mesero")); break;
+                        () -> verEnlaces(DependenciasService.MESERO, "del mesero"),
+                        () -> cambiarEstado("del mesero", meseroSrv::obtenerPorId, meseroSrv::estaActivo,
+                                meseroSrv::activar, meseroSrv::desactivar)); break;
                 case 3: submenu("Personal de cocina", MenuConsola::crearCocina, MenuConsola::listarCocina,
                         MenuConsola::actualizarCocina, MenuConsola::eliminarCocina,
-                        () -> verEnlaces(DependenciasService.COCINA, "del personal de cocina")); break;
+                        () -> verEnlaces(DependenciasService.COCINA, "del personal de cocina"),
+                        () -> cambiarEstado("del personal de cocina", cocinaSrv::obtenerPorId, cocinaSrv::estaActivo,
+                                cocinaSrv::activar, cocinaSrv::desactivar)); break;
                 case 4: submenu("Mesas", MenuConsola::crearMesa, MenuConsola::listarMesas,
                         MenuConsola::actualizarMesa, MenuConsola::eliminarMesa,
                         () -> verEnlaces(DependenciasService.MESA, "de la mesa")); break;
@@ -63,6 +69,12 @@ public class MenuConsola {
 
     private static void submenu(String titulo, Runnable crear, Runnable listar,
                                 Runnable actualizar, Runnable eliminar, Runnable enlaces) {
+        submenu(titulo, crear, listar, actualizar, eliminar, enlaces, null);
+    }
+
+    /** estado puede ser null (Mesas, Categorías y Productos no se activan/desactivan). */
+    private static void submenu(String titulo, Runnable crear, Runnable listar,
+                                Runnable actualizar, Runnable eliminar, Runnable enlaces, Runnable estado) {
         while (true) {
             System.out.println("\n--- " + titulo + " ---");
             System.out.println("1. Crear");
@@ -70,10 +82,12 @@ public class MenuConsola {
             System.out.println("3. Actualizar");
             System.out.println("4. Eliminar");
             System.out.println("5. Ver qué tiene enlazado");
+            if (estado != null) System.out.println("6. Activar / desactivar");
             System.out.println("0. Volver");
             int op = leerEntero("Opción: ");
             if (op == 0) return;
-            Runnable accion = op == 1 ? crear : op == 2 ? listar : op == 3 ? actualizar : op == 4 ? eliminar : op == 5 ? enlaces : null;
+            Runnable accion = op == 1 ? crear : op == 2 ? listar : op == 3 ? actualizar : op == 4 ? eliminar
+                    : op == 5 ? enlaces : op == 6 ? estado : null;
             if (accion == null) { System.out.println("Opción no válida."); continue; }
             ejecutar(accion);
         }
@@ -140,6 +154,21 @@ public class MenuConsola {
         for (String l : lineas) System.out.println("  " + l);
         System.out.println("-> " + depSrv.consejo(tipo));
         return true;
+    }
+
+    /** Opción 6 de los usuarios: muestra el estado actual y pregunta si se quiere cambiar. */
+    private static void cambiarEstado(String etiqueta, java.util.function.IntFunction<Object> existe,
+                                      java.util.function.IntPredicate estaActivo,
+                                      java.util.function.IntConsumer activar,
+                                      java.util.function.IntConsumer desactivar) {
+        int id = leerEntero("Id " + etiqueta + ": ");
+        if (existe.apply(id) == null) { System.out.println("No existe."); return; }
+        boolean activo = estaActivo.test(id);
+        System.out.println("Estado actual: " + (activo ? "activo" : "inactivo"));
+        String r = leerTexto(activo ? "¿Desactivar? (s/n): " : "¿Activar? (s/n): ");
+        if (!r.equalsIgnoreCase("s")) { System.out.println("Sin cambios."); return; }
+        if (activo) desactivar.accept(id); else activar.accept(id);
+        ok(activo ? "Desactivado." : "Activado.");
     }
 
     private static void ok(String msg) { System.out.println("[OK] " + msg); }
