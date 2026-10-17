@@ -19,6 +19,7 @@ public class MenuConsola {
     private static final CategoriaService catSrv = new CategoriaService();
     private static final ProductoService prodSrv = new ProductoService();
     private static final PedidoService pedSrv = new PedidoService();
+    private static final DependenciasService depSrv = new DependenciasService();
 
     public static void main(String[] args) {
         while (true) {
@@ -34,17 +35,23 @@ public class MenuConsola {
             int op = leerEntero("Opción: ");
             switch (op) {
                 case 1: submenu("Administradores", MenuConsola::crearAdmin, MenuConsola::listarAdmin,
-                        MenuConsola::actualizarAdmin, MenuConsola::eliminarAdmin); break;
+                        MenuConsola::actualizarAdmin, MenuConsola::eliminarAdmin,
+                        () -> verEnlaces(DependenciasService.ADMINISTRADOR, "del administrador")); break;
                 case 2: submenu("Meseros", MenuConsola::crearMesero, MenuConsola::listarMeseros,
-                        MenuConsola::actualizarMesero, MenuConsola::eliminarMesero); break;
+                        MenuConsola::actualizarMesero, MenuConsola::eliminarMesero,
+                        () -> verEnlaces(DependenciasService.MESERO, "del mesero")); break;
                 case 3: submenu("Personal de cocina", MenuConsola::crearCocina, MenuConsola::listarCocina,
-                        MenuConsola::actualizarCocina, MenuConsola::eliminarCocina); break;
+                        MenuConsola::actualizarCocina, MenuConsola::eliminarCocina,
+                        () -> verEnlaces(DependenciasService.COCINA, "del personal de cocina")); break;
                 case 4: submenu("Mesas", MenuConsola::crearMesa, MenuConsola::listarMesas,
-                        MenuConsola::actualizarMesa, MenuConsola::eliminarMesa); break;
+                        MenuConsola::actualizarMesa, MenuConsola::eliminarMesa,
+                        () -> verEnlaces(DependenciasService.MESA, "de la mesa")); break;
                 case 5: submenu("Categorías", MenuConsola::crearCategoria, MenuConsola::listarCategorias,
-                        MenuConsola::actualizarCategoria, MenuConsola::eliminarCategoria); break;
+                        MenuConsola::actualizarCategoria, MenuConsola::eliminarCategoria,
+                        () -> verEnlaces(DependenciasService.CATEGORIA, "de la categoría")); break;
                 case 6: submenu("Productos", MenuConsola::crearProducto, MenuConsola::listarProductos,
-                        MenuConsola::actualizarProducto, MenuConsola::eliminarProducto); break;
+                        MenuConsola::actualizarProducto, MenuConsola::eliminarProducto,
+                        () -> verEnlaces(DependenciasService.PRODUCTO, "del producto")); break;
                 case 7: menuPedidos(); break;
                 case 0: System.out.println("Hasta luego."); return;
                 default: System.out.println("Opción no válida.");
@@ -55,17 +62,18 @@ public class MenuConsola {
     
 
     private static void submenu(String titulo, Runnable crear, Runnable listar,
-                                Runnable actualizar, Runnable eliminar) {
+                                Runnable actualizar, Runnable eliminar, Runnable enlaces) {
         while (true) {
             System.out.println("\n--- " + titulo + " ---");
             System.out.println("1. Crear");
             System.out.println("2. Listar");
             System.out.println("3. Actualizar");
             System.out.println("4. Eliminar");
+            System.out.println("5. Ver qué tiene enlazado");
             System.out.println("0. Volver");
             int op = leerEntero("Opción: ");
             if (op == 0) return;
-            Runnable accion = op == 1 ? crear : op == 2 ? listar : op == 3 ? actualizar : op == 4 ? eliminar : null;
+            Runnable accion = op == 1 ? crear : op == 2 ? listar : op == 3 ? actualizar : op == 4 ? eliminar : op == 5 ? enlaces : null;
             if (accion == null) { System.out.println("Opción no válida."); continue; }
             ejecutar(accion);
         }
@@ -116,6 +124,24 @@ public class MenuConsola {
         }
     }
 
+    /** Opción 5: muestra qué registros dependen de este (lo que hay que desenlazar antes de eliminar). */
+    private static void verEnlaces(String tipo, String etiqueta) {
+        int id = leerEntero("Id " + etiqueta + ": ");
+        if (!mostrarEnlaces(tipo, id)) {
+            System.out.println("No tiene registros enlazados: se puede eliminar sin problema.");
+        }
+    }
+
+    /** Imprime los enlaces y el consejo. Devuelve true si había enlaces. */
+    private static boolean mostrarEnlaces(String tipo, int id) {
+        java.util.List<String> lineas = depSrv.enlaces(tipo, id);
+        if (lineas.isEmpty()) return false;
+        System.out.println("Tiene registros enlazados:");
+        for (String l : lineas) System.out.println("  " + l);
+        System.out.println("-> " + depSrv.consejo(tipo));
+        return true;
+    }
+
     private static void ok(String msg) { System.out.println("[OK] " + msg); }
 
     
@@ -149,7 +175,9 @@ public class MenuConsola {
     }
 
     private static void eliminarAdmin() {
-        adminSrv.eliminar(leerEntero("Id del administrador a eliminar: "));
+        int id = leerEntero("Id del administrador a eliminar: ");
+        mostrarEnlaces(DependenciasService.ADMINISTRADOR, id);
+        adminSrv.eliminar(id);
         ok("Operación realizada.");
     }
 
@@ -184,7 +212,9 @@ public class MenuConsola {
     }
 
     private static void eliminarMesero() {
-        meseroSrv.eliminar(leerEntero("Id del mesero a eliminar: "));
+        int id = leerEntero("Id del mesero a eliminar: ");
+        mostrarEnlaces(DependenciasService.MESERO, id);
+        meseroSrv.eliminar(id);
         ok("Operación realizada.");
     }
 
@@ -218,7 +248,9 @@ public class MenuConsola {
     }
 
     private static void eliminarCocina() {
-        cocinaSrv.eliminar(leerEntero("Id del personal de cocina a eliminar: "));
+        int id = leerEntero("Id del personal de cocina a eliminar: ");
+        mostrarEnlaces(DependenciasService.COCINA, id);
+        cocinaSrv.eliminar(id);
         ok("Operación realizada.");
     }
 
@@ -253,7 +285,9 @@ public class MenuConsola {
     }
 
     private static void eliminarMesa() {
-        mesaSrv.eliminar(leerEntero("Id de la mesa a eliminar: "));
+        int id = leerEntero("Id de la mesa a eliminar: ");
+        mostrarEnlaces(DependenciasService.MESA, id);
+        mesaSrv.eliminar(id);
         ok("Operación realizada.");
     }
 
@@ -283,7 +317,9 @@ public class MenuConsola {
     }
 
     private static void eliminarCategoria() {
-        catSrv.eliminar(leerEntero("Id de la categoría a eliminar: "));
+        int id = leerEntero("Id de la categoría a eliminar: ");
+        mostrarEnlaces(DependenciasService.CATEGORIA, id);
+        catSrv.eliminar(id);
         ok("Operación realizada.");
     }
 
@@ -324,7 +360,9 @@ public class MenuConsola {
     }
 
     private static void eliminarProducto() {
-        prodSrv.eliminar(leerEntero("Id del producto a eliminar: "));
+        int id = leerEntero("Id del producto a eliminar: ");
+        mostrarEnlaces(DependenciasService.PRODUCTO, id);
+        prodSrv.eliminar(id);
         ok("Operación realizada (si ya se usó en pedidos queda como 'No disponible').");
     }
 
