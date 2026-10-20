@@ -7,7 +7,7 @@ import entidades.*;
 import servicios.*;
 import util.CambioEstado;
 import util.Constantes;
-
+// Modificado por Cami
 /**
  * Demostración del flujo completo descrito en el documento (HU1 a HU26),
  * ejecutada contra la base de datos MySQL "restaurante".
