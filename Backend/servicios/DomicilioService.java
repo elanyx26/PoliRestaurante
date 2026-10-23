@@ -1,11 +1,9 @@
 package servicios;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
+import dao.DomicilioDAO;
 import entidades.Domicilio;
 import entidades.Pedido;
-import util.Bd;
 import util.Constantes;
 import util.Validar;
 
@@ -15,21 +13,7 @@ import util.Validar;
  * de envío se suma automáticamente al total del pedido.
  */
 public class DomicilioService {
-    private static final String[] COLS = {"id_pedido", "direccion", "telefono", "costo_envio"};
-
-    private static Domicilio mapear(ResultSet rs) throws SQLException {
-        Domicilio d = new Domicilio();
-        d.setId_domicilio(rs.getInt("id_domicilio"));
-        d.setId_pedido(rs.getInt("id_pedido"));
-        d.setDireccion(rs.getString("direccion"));
-        d.setTelefono(rs.getString("telefono"));
-        d.setCosto_envio(rs.getInt("costo_envio"));
-        return d;
-    }
-
-    private static Object[] valores(Domicilio d) {
-        return new Object[] {d.getId_pedido(), d.getDireccion(), d.getTelefono(), d.getCosto_envio()};
-    }
+    private final DomicilioDAO dao = new DomicilioDAO();
 
     public Domicilio crear(Domicilio entidad) {
         Validar.noNulo(entidad, "Domicilio");
@@ -38,14 +22,14 @@ public class DomicilioService {
         if (obtenerPorPedido(entidad.getId_pedido()) != null) {
             throw new IllegalArgumentException("El pedido ya tiene datos de entrega (relación única)");
         }
-        entidad.setId_domicilio(Bd.insertar("Domicilio", "id_domicilio", entidad.getId_domicilio(), COLS, valores(entidad)));
+        dao.crear(entidad);
         entidad.setPedido(pedido);
         new PedidoService().recalcularTotal(entidad.getId_pedido());
         return entidad;
     }
 
     public Domicilio obtenerPorId(int id_domicilio) {
-        Domicilio d = Bd.uno("SELECT * FROM Domicilio WHERE id_domicilio = ?", DomicilioService::mapear, id_domicilio);
+        Domicilio d = dao.obtenerPorId(id_domicilio);
         if (d != null) {
             d.setPedido(new PedidoService().obtenerPorId(d.getId_pedido()));
         }
@@ -53,21 +37,20 @@ public class DomicilioService {
     }
 
     public List<Domicilio> listar() {
-        return Bd.consultar("SELECT * FROM Domicilio ORDER BY id_domicilio", DomicilioService::mapear);
+        return dao.obtenerTodos();
     }
 
     /** No se puede modificar el envío de un pedido entregado, cancelado o cerrado (HU25). */
     public Domicilio actualizar(Domicilio entidad) {
         Validar.noNulo(entidad, "Domicilio");
-        Domicilio existente = Bd.uno("SELECT * FROM Domicilio WHERE id_domicilio = ?",
-                DomicilioService::mapear, entidad.getId_domicilio());
+        Domicilio existente = dao.obtenerPorId(entidad.getId_domicilio());
         if (existente == null) {
             throw new IllegalArgumentException("No existe un domicilio con id " + entidad.getId_domicilio());
         }
         entidad.setId_pedido(existente.getId_pedido());   // el pedido asociado no cambia
         Pedido pedido = pedidoDomicilio(existente.getId_pedido());
         validarCampos(entidad);
-        Bd.actualizar("Domicilio", "id_domicilio", entidad.getId_domicilio(), COLS, valores(entidad));
+        dao.actualizar(entidad);
         entidad.setPedido(pedido);
         new PedidoService().recalcularTotal(entidad.getId_pedido());
         return entidad;
@@ -75,14 +58,14 @@ public class DomicilioService {
 
     /** Solo se pueden quitar los datos de entrega de un pedido que aún no se envió a cocina. */
     public void eliminar(int id_domicilio) {
-        Domicilio d = Bd.uno("SELECT * FROM Domicilio WHERE id_domicilio = ?", DomicilioService::mapear, id_domicilio);
+        Domicilio d = dao.obtenerPorId(id_domicilio);
         if (d == null) {
             return;
         }
         if (!new PedidoService().esEditable(d.getId_pedido())) {
             throw new IllegalStateException("El pedido ya fue enviado a cocina; no se pueden quitar los datos de entrega");
         }
-        Bd.eliminar("Domicilio", "id_domicilio", id_domicilio);
+        dao.eliminar(id_domicilio);
         new PedidoService().recalcularTotal(d.getId_pedido());
     }
 
@@ -90,7 +73,7 @@ public class DomicilioService {
 
     /** Domicilio asociado a un pedido, o null si no tiene. */
     public Domicilio obtenerPorPedido(int id_pedido) {
-        return Bd.uno("SELECT * FROM Domicilio WHERE id_pedido = ?", DomicilioService::mapear, id_pedido);
+        return dao.obtenerPorPedido(id_pedido);
     }
 
     /**
@@ -115,7 +98,7 @@ public class DomicilioService {
 
     /** Uso interno: al borrar un pedido borrador se eliminan sus datos de entrega. */
     void eliminarPorPedido(int id_pedido) {
-        Bd.ejecutar("DELETE FROM Domicilio WHERE id_pedido = ?", id_pedido);
+        dao.eliminarPorPedido(id_pedido);
     }
 
     // --------------------------------------------------------------- privados

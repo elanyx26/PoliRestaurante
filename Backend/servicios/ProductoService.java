@@ -1,44 +1,25 @@
 package servicios;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
+import dao.DetallePedidoDAO;
+import dao.ProductoDAO;
 import entidades.Producto;
-import util.Bd;
 import util.Constantes;
 import util.Validar;
 
 /** HU5 / RF-10: gestión de productos del menú (tabla Producto). */
 public class ProductoService {
-    private static final String[] COLS =
-            {"nombre", "descripcion", "precio", "id_categoria", "id_administrador", "disponibilidad"};
-
-    private static Producto mapear(ResultSet rs) throws SQLException {
-        Producto p = new Producto();
-        p.setId_producto(rs.getInt("id_producto"));
-        p.setNombre(rs.getString("nombre"));
-        p.setDescripcion(rs.getString("descripcion"));
-        p.setPrecio(rs.getInt("precio"));
-        p.setId_categoria(rs.getInt("id_categoria"));
-        p.setId_administrador(rs.getInt("id_administrador"));
-        p.setDisponibilidad(rs.getString("disponibilidad"));
-        return p;
-    }
-
-    private static Object[] valores(Producto p) {
-        return new Object[] {p.getNombre(), p.getDescripcion(), p.getPrecio(),
-                Bd.fk(p.getId_categoria()), Bd.fk(p.getId_administrador()), p.getDisponibilidad()};
-    }
+    private final ProductoDAO dao = new ProductoDAO();
 
     public Producto crear(Producto entidad) {
         validar(entidad);
-        entidad.setId_producto(Bd.insertar("Producto", "id_producto", entidad.getId_producto(), COLS, valores(entidad)));
+        dao.crear(entidad);
         hidratar(entidad);
         return entidad;
     }
 
     public Producto obtenerPorId(int id_producto) {
-        Producto p = Bd.uno("SELECT * FROM Producto WHERE id_producto = ?", ProductoService::mapear, id_producto);
+        Producto p = dao.obtenerPorId(id_producto);
         if (p != null) {
             hidratar(p);
         }
@@ -46,7 +27,7 @@ public class ProductoService {
     }
 
     public List<Producto> listar() {
-        return Bd.consultar("SELECT * FROM Producto ORDER BY id_producto", ProductoService::mapear);
+        return dao.obtenerTodos();
     }
 
     public Producto actualizar(Producto entidad) {
@@ -55,7 +36,7 @@ public class ProductoService {
             throw new IllegalArgumentException("No existe un producto con id " + entidad.getId_producto());
         }
         validar(entidad);
-        Bd.actualizar("Producto", "id_producto", entidad.getId_producto(), COLS, valores(entidad));
+        dao.actualizar(entidad);
         hidratar(entidad);
         return entidad;
     }
@@ -68,20 +49,18 @@ public class ProductoService {
         if (obtenerPorId(id_producto) == null) {
             return;
         }
-        if (Bd.entero("SELECT COUNT(*) FROM DetallePedido WHERE id_producto = ?", id_producto) > 0) {
-            Bd.ejecutar("UPDATE Producto SET disponibilidad = ? WHERE id_producto = ?",
-                    Constantes.NO_DISPONIBLE, id_producto);
+        if (new DetallePedidoDAO().contarPorProducto(id_producto) > 0) {
+            dao.actualizarDisponibilidad(id_producto, Constantes.NO_DISPONIBLE);
             return;
         }
-        Bd.eliminar("Producto", "id_producto", id_producto);
+        dao.eliminar(id_producto);
     }
 
     // ---------------------------------------------------------------- extras
 
     /** HU5: los productos "No disponible" no aparecen al crear pedidos. */
     public List<Producto> listarDisponibles() {
-        return Bd.consultar("SELECT * FROM Producto WHERE LOWER(disponibilidad) = LOWER(?) ORDER BY nombre",
-                ProductoService::mapear, Constantes.DISPONIBLE);
+        return dao.obtenerPorDisponibilidad(Constantes.DISPONIBLE);
     }
 
     public boolean estaDisponible(Producto p) {

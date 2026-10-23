@@ -29,6 +29,7 @@ Backend/
 ├── api/          Recursos REST y servidor (ServidorRest, PedidoRecurso, MesaRecurso, ProductoRecurso, ...)
 ├── app/          Puntos de entrada: Main (demo) y MenuConsola (el menú interactivo)
 ├── entidades/    Clases del modelo (Administrador, Mesero, PersonalCocina, Mesa, │                 Categoria, Producto, Pedido, DetallePedido, Domicilio)
+├── dao/          Acceso a datos: un DAO por tabla (MesaDAO, PedidoDAO, ProductoDAO, ...) con el SQL y el CRUD
 ├── servicios/    Lógica de negocio (AdministradorService, MeseroService, │                 PersonalCocinaService, MesaService, CategoriaService, ProductoService, │                 PedidoService, DetallePedidoService, DomicilioService, │                 AutenticacionService)
 ├── util/         Apoyo: Conexion y Bd (acceso a MySQL), Constantes, Validar, Seguridad,
 │                 Fechas, CambioEstado, ReporteVentas
@@ -38,6 +39,19 @@ Backend/
 ├── out/          Clases compiladas
 ├── db.properties Configuración de la conexión a MySQL
 └── README.txt
+
+## Capas
+
+La aplicación sigue la misma idea del ejemplo de clase (modelo → DAO → cliente):
+
+| Capa | Carpeta | Responsabilidad |
+|------|---------|-----------------|
+| Modelo | `entidades/` | Clases con los datos (equivalente a `models.py`) |
+| DAO | `dao/` | Solo SQL y CRUD de cada tabla: `crear`, `obtenerPorId`, `obtenerTodos`, `actualizar`, `eliminar` y consultas propias (equivalente a `PersonaDAO.py`) |
+| Servicio | `servicios/` | Reglas de negocio y validaciones; llaman a los DAO y no contienen SQL |
+| Cliente | `app/` y `api/` | Menú por consola, demo y API REST; consumen los servicios (equivalente a `Cliente.py`) |
+
+Los DAO usan `util/Bd` y `util/Conexion` para abrir cada conexión.
 
 ## Requisitos
 
@@ -67,6 +81,11 @@ Scripts disponibles en `sql/`:
 ## Compilación y ejecución
 
 Desde la raíz de `Backend/`, compila el código en la carpeta `out/`:
+
+```
+mkdir out
+javac -encoding UTF-8 -cp "lib/*" -d out entidades/*.java dao/*.java servicios/*.java util/*.java app/*.java api/*.java
+```
 
 ### 1. Demostración del flujo completo (`app.Main`)
 

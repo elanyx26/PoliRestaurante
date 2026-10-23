@@ -1,10 +1,12 @@
 package servicios;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
+import dao.AdministradorDAO;
+import dao.CategoriaDAO;
+import dao.MesaDAO;
+import dao.PedidoDAO;
+import dao.ProductoDAO;
 import entidades.Administrador;
-import util.Bd;
 import util.Constantes;
 import util.Seguridad;
 import util.Validar;
@@ -14,36 +16,20 @@ import util.Validar;
  * Los usuarios desactivados (HU19) conservan su historial pero no pueden ingresar.
  */
 public class AdministradorService {
-    private static final String TABLA = "Administrador";
-    private static final String COL_ID = "id_administrador";
-    private static final String[] COLS = {"nombre", "usuario", "contrasena"};
-
-    private static Administrador mapear(ResultSet rs) throws SQLException {
-        Administrador u = new Administrador();
-        u.setId_administrador(rs.getInt("id_administrador"));
-        u.setNombre(rs.getString("nombre"));
-        u.setUsuario(rs.getString("usuario"));
-        u.setContrasena(rs.getString("contrasena"));
-        return u;
-    }
-
-    private static Object[] valores(Administrador u) {
-        return new Object[] {u.getNombre(), u.getUsuario(), u.getContrasena()};
-    }
+    private final AdministradorDAO dao = new AdministradorDAO();
 
     public Administrador crear(Administrador entidad) {
         validar(entidad, 0);
         proteger(entidad);
-        entidad.setId_administrador(Bd.insertar(TABLA, COL_ID, entidad.getId_administrador(), COLS, valores(entidad)));
-        return entidad;
+        return dao.crear(entidad);
     }
 
     public Administrador obtenerPorId(int id_administrador) {
-        return Bd.uno("SELECT * FROM " + TABLA + " WHERE " + COL_ID + " = ?", AdministradorService::mapear, id_administrador);
+        return dao.obtenerPorId(id_administrador);
     }
 
     public List<Administrador> listar() {
-        return Bd.consultar("SELECT * FROM " + TABLA + " ORDER BY " + COL_ID, AdministradorService::mapear);
+        return dao.obtenerTodos();
     }
 
     public Administrador actualizar(Administrador entidad) {
@@ -58,22 +44,21 @@ public class AdministradorService {
         }
         validar(entidad, entidad.getId_administrador());
         proteger(entidad);
-        Bd.actualizar(TABLA, COL_ID, entidad.getId_administrador(), COLS, valores(entidad));
-        return entidad;
+        return dao.actualizar(entidad);
     }
 
     public void eliminar(int id_administrador) {
         if (obtenerPorId(id_administrador) == null) {
             return;
         }
-        int referencias = 0;
-        for (String t : new String[] {"Mesa", "Categoria", "Producto", "Pedido"}) {
-            referencias += Bd.entero("SELECT COUNT(*) FROM " + t + " WHERE id_administrador = ?", id_administrador);
-        }
+        int referencias = new MesaDAO().contarPorAdministrador(id_administrador)
+                + new CategoriaDAO().contarPorAdministrador(id_administrador)
+                + new ProductoDAO().contarPorAdministrador(id_administrador)
+                + new PedidoDAO().contarPorAdministrador(id_administrador);
         if (referencias > 0) {
             throw new IllegalStateException("El administrador tiene registros asociados (mesas, categorías, productos o pedidos); desactívelo en lugar de eliminarlo");
         }
-        Bd.eliminar(TABLA, COL_ID, id_administrador);
+        dao.eliminar(id_administrador);
     }
 
     // ---------------------------------------------------------------- extras
@@ -87,7 +72,7 @@ public class AdministradorService {
         if (AutenticacionService.usuarioEnUso(u.getUsuario(), Constantes.ROL_ADMINISTRADOR, id_administrador)) {
             throw new IllegalStateException("Ya existe otro usuario activo con el usuario '" + u.getUsuario() + "'");
         }
-        Bd.ejecutar("UPDATE " + TABLA + " SET activo = 1 WHERE " + COL_ID + " = ?", id_administrador);
+        dao.cambiarActivo(id_administrador, true);
     }
 
     /** HU19: desactiva un usuario conservando su historial de pedidos. */
@@ -95,11 +80,11 @@ public class AdministradorService {
         if (obtenerPorId(id_administrador) == null) {
             throw new IllegalArgumentException("No existe un administrador con id " + id_administrador);
         }
-        Bd.ejecutar("UPDATE " + TABLA + " SET activo = 0 WHERE " + COL_ID + " = ?", id_administrador);
+        dao.cambiarActivo(id_administrador, false);
     }
 
     public boolean estaActivo(int id_administrador) {
-        return Bd.entero("SELECT COUNT(*) FROM " + TABLA + " WHERE " + COL_ID + " = ? AND activo = 1", id_administrador) > 0;
+        return dao.estaActivo(id_administrador);
     }
 
     /**

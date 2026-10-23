@@ -1,10 +1,9 @@
 package servicios;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
+import dao.PedidoDAO;
+import dao.PersonalCocinaDAO;
 import entidades.PersonalCocina;
-import util.Bd;
 import util.Constantes;
 import util.Seguridad;
 import util.Validar;
@@ -14,36 +13,20 @@ import util.Validar;
  * Los usuarios desactivados (HU19) conservan su historial pero no pueden ingresar.
  */
 public class PersonalCocinaService {
-    private static final String TABLA = "PersonalCocina";
-    private static final String COL_ID = "id_cocina";
-    private static final String[] COLS = {"nombre", "usuario", "contrasena"};
-
-    private static PersonalCocina mapear(ResultSet rs) throws SQLException {
-        PersonalCocina u = new PersonalCocina();
-        u.setId_cocina(rs.getInt("id_cocina"));
-        u.setNombre(rs.getString("nombre"));
-        u.setUsuario(rs.getString("usuario"));
-        u.setContrasena(rs.getString("contrasena"));
-        return u;
-    }
-
-    private static Object[] valores(PersonalCocina u) {
-        return new Object[] {u.getNombre(), u.getUsuario(), u.getContrasena()};
-    }
+    private final PersonalCocinaDAO dao = new PersonalCocinaDAO();
 
     public PersonalCocina crear(PersonalCocina entidad) {
         validar(entidad, 0);
         proteger(entidad);
-        entidad.setId_cocina(Bd.insertar(TABLA, COL_ID, entidad.getId_cocina(), COLS, valores(entidad)));
-        return entidad;
+        return dao.crear(entidad);
     }
 
     public PersonalCocina obtenerPorId(int id_cocina) {
-        return Bd.uno("SELECT * FROM " + TABLA + " WHERE " + COL_ID + " = ?", PersonalCocinaService::mapear, id_cocina);
+        return dao.obtenerPorId(id_cocina);
     }
 
     public List<PersonalCocina> listar() {
-        return Bd.consultar("SELECT * FROM " + TABLA + " ORDER BY " + COL_ID, PersonalCocinaService::mapear);
+        return dao.obtenerTodos();
     }
 
     public PersonalCocina actualizar(PersonalCocina entidad) {
@@ -58,18 +41,17 @@ public class PersonalCocinaService {
         }
         validar(entidad, entidad.getId_cocina());
         proteger(entidad);
-        Bd.actualizar(TABLA, COL_ID, entidad.getId_cocina(), COLS, valores(entidad));
-        return entidad;
+        return dao.actualizar(entidad);
     }
 
     public void eliminar(int id_cocina) {
         if (obtenerPorId(id_cocina) == null) {
             return;
         }
-        if (Bd.entero("SELECT COUNT(*) FROM Pedido WHERE id_cocina = ?", id_cocina) > 0) {
+        if (new PedidoDAO().contarPorCocina(id_cocina) > 0) {
             throw new IllegalStateException("El usuario de cocina tiene pedidos asociados; desactívelo para conservar su historial");
         }
-        Bd.eliminar(TABLA, COL_ID, id_cocina);
+        dao.eliminar(id_cocina);
     }
 
     // ---------------------------------------------------------------- extras
@@ -83,7 +65,7 @@ public class PersonalCocinaService {
         if (AutenticacionService.usuarioEnUso(u.getUsuario(), Constantes.ROL_COCINA, id_cocina)) {
             throw new IllegalStateException("Ya existe otro usuario activo con el usuario '" + u.getUsuario() + "'");
         }
-        Bd.ejecutar("UPDATE " + TABLA + " SET activo = 1 WHERE " + COL_ID + " = ?", id_cocina);
+        dao.cambiarActivo(id_cocina, true);
     }
 
     /** HU19: desactiva un usuario conservando su historial de pedidos. */
@@ -91,11 +73,11 @@ public class PersonalCocinaService {
         if (obtenerPorId(id_cocina) == null) {
             throw new IllegalArgumentException("No existe un usuario de cocina con id " + id_cocina);
         }
-        Bd.ejecutar("UPDATE " + TABLA + " SET activo = 0 WHERE " + COL_ID + " = ?", id_cocina);
+        dao.cambiarActivo(id_cocina, false);
     }
 
     public boolean estaActivo(int id_cocina) {
-        return Bd.entero("SELECT COUNT(*) FROM " + TABLA + " WHERE " + COL_ID + " = ? AND activo = 1", id_cocina) > 0;
+        return dao.estaActivo(id_cocina);
     }
 
     // --------------------------------------------------------------- privados

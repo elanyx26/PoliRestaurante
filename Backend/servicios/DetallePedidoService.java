@@ -1,12 +1,10 @@
 package servicios;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
+import dao.DetallePedidoDAO;
 import entidades.DetallePedido;
 import entidades.Pedido;
 import entidades.Producto;
-import util.Bd;
 import util.Validar;
 
 /**
@@ -16,22 +14,7 @@ import util.Validar;
  * total del pedido se recalcula automáticamente.
  */
 public class DetallePedidoService {
-    private static final String[] COLS = {"id_pedido", "id_producto", "cantidad", "precio_unitario", "notas"};
-
-    private static DetallePedido mapear(ResultSet rs) throws SQLException {
-        DetallePedido d = new DetallePedido();
-        d.setId_detalle(rs.getInt("id_detalle"));
-        d.setId_pedido(rs.getInt("id_pedido"));
-        d.setId_producto(rs.getInt("id_producto"));
-        d.setCantidad(rs.getInt("cantidad"));
-        d.setPrecio_unitario(rs.getInt("precio_unitario"));
-        d.setNotas(rs.getString("notas"));
-        return d;
-    }
-
-    private static Object[] valores(DetallePedido d) {
-        return new Object[] {d.getId_pedido(), d.getId_producto(), d.getCantidad(), d.getPrecio_unitario(), d.getNotas()};
-    }
+    private final DetallePedidoDAO dao = new DetallePedidoDAO();
 
     public DetallePedido crear(DetallePedido entidad) {
         Validar.noNulo(entidad, "DetallePedido");
@@ -40,7 +23,7 @@ public class DetallePedidoService {
         Validar.positivo(entidad.getCantidad(), "cantidad");
 
         entidad.setPrecio_unitario(producto.getPrecio());   // el usuario no define el precio
-        entidad.setId_detalle(Bd.insertar("DetallePedido", "id_detalle", entidad.getId_detalle(), COLS, valores(entidad)));
+        dao.crear(entidad);
         entidad.setPedido(pedido);
         entidad.setProducto(producto);
         new PedidoService().recalcularTotal(entidad.getId_pedido());
@@ -48,7 +31,7 @@ public class DetallePedidoService {
     }
 
     public DetallePedido obtenerPorId(int id_detalle) {
-        DetallePedido d = Bd.uno("SELECT * FROM DetallePedido WHERE id_detalle = ?", DetallePedidoService::mapear, id_detalle);
+        DetallePedido d = dao.obtenerPorId(id_detalle);
         if (d != null) {
             d.setPedido(new PedidoService().obtenerPorId(d.getId_pedido()));
             d.setProducto(new ProductoService().obtenerPorId(d.getId_producto()));
@@ -57,7 +40,7 @@ public class DetallePedidoService {
     }
 
     public List<DetallePedido> listar() {
-        return Bd.consultar("SELECT * FROM DetallePedido ORDER BY id_detalle", DetallePedidoService::mapear);
+        return dao.obtenerTodos();
     }
 
     /** Permite cambiar cantidad, producto y notas mientras el pedido no se haya enviado a cocina. */
@@ -78,7 +61,7 @@ public class DetallePedidoService {
         } else {
             entidad.setPrecio_unitario(producto.getPrecio());
         }
-        Bd.actualizar("DetallePedido", "id_detalle", entidad.getId_detalle(), COLS, valores(entidad));
+        dao.actualizar(entidad);
         entidad.setPedido(pedido);
         entidad.setProducto(producto);
         new PedidoService().recalcularTotal(entidad.getId_pedido());
@@ -86,12 +69,12 @@ public class DetallePedidoService {
     }
 
     public void eliminar(int id_detalle) {
-        DetallePedido d = Bd.uno("SELECT * FROM DetallePedido WHERE id_detalle = ?", DetallePedidoService::mapear, id_detalle);
+        DetallePedido d = dao.obtenerPorId(id_detalle);
         if (d == null) {
             return;
         }
         pedidoEditable(d.getId_pedido());
-        Bd.eliminar("DetallePedido", "id_detalle", id_detalle);
+        dao.eliminar(id_detalle);
         new PedidoService().recalcularTotal(d.getId_pedido());
     }
 
@@ -99,13 +82,12 @@ public class DetallePedidoService {
 
     /** HU11: productos de un pedido (cantidad, precio unitario y notas). */
     public List<DetallePedido> listarPorPedido(int id_pedido) {
-        return Bd.consultar("SELECT * FROM DetallePedido WHERE id_pedido = ? ORDER BY id_detalle",
-                DetallePedidoService::mapear, id_pedido);
+        return dao.obtenerPorPedido(id_pedido);
     }
 
     /** Uso interno: al borrar un pedido borrador se eliminan sus productos. */
     void eliminarPorPedido(int id_pedido) {
-        Bd.ejecutar("DELETE FROM DetallePedido WHERE id_pedido = ?", id_pedido);
+        dao.eliminarPorPedido(id_pedido);
     }
 
     // --------------------------------------------------------------- privados

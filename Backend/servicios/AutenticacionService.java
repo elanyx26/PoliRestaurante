@@ -2,8 +2,7 @@ package servicios;
 
 import java.util.ArrayList;
 import java.util.List;
-import util.Bd;
-import util.Constantes;
+import dao.CredencialDAO;
 import util.Seguridad;
 
 /**
@@ -98,15 +97,10 @@ public class AutenticacionService {
 
     private static List<Sesion> todos() {
         List<Sesion> lista = new ArrayList<>();
-        lista.addAll(cargar("Mesero", "id_mesero", Constantes.ROL_MESERO));
-        lista.addAll(cargar("PersonalCocina", "id_cocina", Constantes.ROL_COCINA));
-        lista.addAll(cargar("Administrador", "id_administrador", Constantes.ROL_ADMINISTRADOR));
+        for (CredencialDAO.Credencial c : new CredencialDAO().obtenerTodas()) {
+            lista.add(new Sesion(c.getRol(), c.getId(), c.getNombre(), c.getUsuario(),
+                    c.getContrasena(), c.isActivo()));
+        }
         return lista;
-    }
-
-    private static List<Sesion> cargar(String tabla, String colId, String rol) {
-        return Bd.consultar("SELECT " + colId + ", nombre, usuario, contrasena, activo FROM " + tabla,
-                rs -> new Sesion(rol, rs.getInt(1), rs.getString("nombre"), rs.getString("usuario"),
-                        rs.getString("contrasena"), rs.getInt("activo") == 1));
     }
 }

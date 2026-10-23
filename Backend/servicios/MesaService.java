@@ -1,40 +1,26 @@
 package servicios;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
+import dao.MesaDAO;
+import dao.PedidoDAO;
 import entidades.Mesa;
 import entidades.Pedido;
-import util.Bd;
 import util.Constantes;
 import util.Validar;
 
 /** HU6, HU10, HU12 / RF-11: gestión de mesas (tabla Mesa). */
 public class MesaService {
-    private static final String[] COLS = {"numero", "estado", "id_administrador"};
-
-    private static Mesa mapear(ResultSet rs) throws SQLException {
-        Mesa m = new Mesa();
-        m.setId_mesa(rs.getInt("id_mesa"));
-        m.setNumero(rs.getInt("numero"));
-        m.setEstado(rs.getString("estado"));
-        m.setId_administrador(rs.getInt("id_administrador"));
-        return m;
-    }
-
-    private static Object[] valores(Mesa m) {
-        return new Object[] {m.getNumero(), m.getEstado(), Bd.fk(m.getId_administrador())};
-    }
+    private final MesaDAO dao = new MesaDAO();
 
     public Mesa crear(Mesa entidad) {
         validar(entidad, 0);
-        entidad.setId_mesa(Bd.insertar("Mesa", "id_mesa", entidad.getId_mesa(), COLS, valores(entidad)));
+        dao.crear(entidad);
         hidratar(entidad);
         return entidad;
     }
 
     public Mesa obtenerPorId(int id_mesa) {
-        Mesa m = Bd.uno("SELECT * FROM Mesa WHERE id_mesa = ?", MesaService::mapear, id_mesa);
+        Mesa m = dao.obtenerPorId(id_mesa);
         if (m != null) {
             hidratar(m);
         }
@@ -42,7 +28,7 @@ public class MesaService {
     }
 
     public List<Mesa> listar() {
-        return Bd.consultar("SELECT * FROM Mesa ORDER BY numero", MesaService::mapear);
+        return dao.obtenerTodos();
     }
 
     public Mesa actualizar(Mesa entidad) {
@@ -57,7 +43,7 @@ public class MesaService {
                 && Constantes.MESA_OCUPADA.equals(existente.getEstado())) {
             verificarSinPedidosEnCurso(entidad.getId_mesa());
         }
-        Bd.actualizar("Mesa", "id_mesa", entidad.getId_mesa(), COLS, valores(entidad));
+        dao.actualizar(entidad);
         hidratar(entidad);
         return entidad;
     }
@@ -70,10 +56,10 @@ public class MesaService {
         if (Constantes.MESA_OCUPADA.equals(m.getEstado())) {
             throw new IllegalStateException("No se puede eliminar una mesa ocupada");
         }
-        if (Bd.entero("SELECT COUNT(*) FROM Pedido WHERE id_mesa = ?", id_mesa) > 0) {
+        if (new PedidoDAO().contarPorMesa(id_mesa) > 0) {
             throw new IllegalStateException("La mesa tiene historial de pedidos y no se puede eliminar");
         }
-        Bd.eliminar("Mesa", "id_mesa", id_mesa);
+        dao.eliminar(id_mesa);
     }
 
     // ---------------------------------------------------------------- extras
@@ -88,7 +74,7 @@ public class MesaService {
         if (Constantes.MESA_LIBRE.equals(estado) && Constantes.MESA_OCUPADA.equals(m.getEstado())) {
             verificarSinPedidosEnCurso(id_mesa);
         }
-        Bd.ejecutar("UPDATE Mesa SET estado = ? WHERE id_mesa = ?", estado, id_mesa);
+        dao.actualizarEstado(id_mesa, estado);
         m.setEstado(estado);
         return m;
     }
@@ -100,12 +86,12 @@ public class MesaService {
 
     /** HU12: cantidad de mesas libres. */
     public int contarLibres() {
-        return Bd.entero("SELECT COUNT(*) FROM Mesa WHERE estado = ?", Constantes.MESA_LIBRE);
+        return dao.contarPorEstado(Constantes.MESA_LIBRE);
     }
 
     /** HU12: cantidad de mesas ocupadas. */
     public int contarOcupadas() {
-        return Bd.entero("SELECT COUNT(*) FROM Mesa WHERE estado = ?", Constantes.MESA_OCUPADA);
+        return dao.contarPorEstado(Constantes.MESA_OCUPADA);
     }
 
     /** HU10: historial de pedidos de una mesa, del más reciente al más antiguo. */
@@ -116,7 +102,7 @@ public class MesaService {
     // --------------------------------------------------------------- privados
 
     private List<Mesa> filtrar(String estado) {
-        return Bd.consultar("SELECT * FROM Mesa WHERE estado = ? ORDER BY numero", MesaService::mapear, estado);
+        return dao.obtenerPorEstado(estado);
     }
 
     private void verificarSinPedidosEnCurso(int id_mesa) {
@@ -132,7 +118,7 @@ public class MesaService {
             m.setEstado(Constantes.MESA_LIBRE);
         }
         validarEstado(m.getEstado());
-        if (Bd.entero("SELECT COUNT(*) FROM Mesa WHERE numero = ? AND id_mesa <> ?", m.getNumero(), idPropio) > 0) {
+        if (dao.contarPorNumero(m.getNumero(), idPropio) > 0) {
             throw new IllegalArgumentException("Ya existe una mesa con el número " + m.getNumero());
         }
         if (new AdministradorService().obtenerPorId(m.getId_administrador()) == null) {

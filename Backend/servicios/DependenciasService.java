@@ -2,13 +2,15 @@ package servicios;
 
 import java.util.ArrayList;
 import java.util.List;
-import util.Bd;
+import dao.DependenciasDAO;
 
 /**
  * Consulta qué registros están enlazados (por llave foránea) a otro registro.
  * Sirve para saber qué hay que desenlazar o eliminar antes de borrar a un actor.
  */
 public class DependenciasService {
+
+    private final DependenciasDAO dao = new DependenciasDAO();
 
     public static final String ADMINISTRADOR = "Administrador";
     public static final String MESERO = "Mesero";
@@ -22,45 +24,25 @@ public class DependenciasService {
         List<String> r = new ArrayList<>();
         switch (tipo) {
             case ADMINISTRADOR:
-                agregar(r, "Mesas registradas por él",
-                        "SELECT id_mesa, numero, estado FROM Mesa WHERE id_administrador = ?",
-                        rs -> "mesa id " + rs.getInt("id_mesa") + " (#" + rs.getInt("numero")
-                                + ", " + rs.getString("estado") + ")", id);
-                agregar(r, "Categorías registradas por él",
-                        "SELECT id_categoria, nombre FROM Categoria WHERE id_administrador = ?",
-                        rs -> "categoría id " + rs.getInt("id_categoria") + " (" + rs.getString("nombre") + ")", id);
-                agregar(r, "Productos registrados por él",
-                        "SELECT id_producto, nombre FROM Producto WHERE id_administrador = ?",
-                        rs -> "producto id " + rs.getInt("id_producto") + " (" + rs.getString("nombre") + ")", id);
-                agregar(r, "Pedidos asociados a él",
-                        "SELECT id_pedido, tipo_pedido, estado FROM Pedido WHERE id_administrador = ?",
-                        DependenciasService::pedido, id);
+                agregar(r, "Mesas registradas por él", dao.mesasDeAdministrador(id));
+                agregar(r, "Categorías registradas por él", dao.categoriasDeAdministrador(id));
+                agregar(r, "Productos registrados por él", dao.productosDeAdministrador(id));
+                agregar(r, "Pedidos asociados a él", dao.pedidosDeAdministrador(id));
                 break;
             case MESERO:
-                agregar(r, "Pedidos atendidos por este mesero",
-                        "SELECT id_pedido, tipo_pedido, estado FROM Pedido WHERE id_mesero = ?",
-                        DependenciasService::pedido, id);
+                agregar(r, "Pedidos atendidos por este mesero", dao.pedidosDeMesero(id));
                 break;
             case COCINA:
-                agregar(r, "Pedidos preparados por este usuario de cocina",
-                        "SELECT id_pedido, tipo_pedido, estado FROM Pedido WHERE id_cocina = ?",
-                        DependenciasService::pedido, id);
+                agregar(r, "Pedidos preparados por este usuario de cocina", dao.pedidosDeCocina(id));
                 break;
             case MESA:
-                agregar(r, "Pedidos hechos en esta mesa",
-                        "SELECT id_pedido, tipo_pedido, estado FROM Pedido WHERE id_mesa = ?",
-                        DependenciasService::pedido, id);
+                agregar(r, "Pedidos hechos en esta mesa", dao.pedidosDeMesa(id));
                 break;
             case CATEGORIA:
-                agregar(r, "Productos de esta categoría",
-                        "SELECT id_producto, nombre FROM Producto WHERE id_categoria = ?",
-                        rs -> "producto id " + rs.getInt("id_producto") + " (" + rs.getString("nombre") + ")", id);
+                agregar(r, "Productos de esta categoría", dao.productosDeCategoria(id));
                 break;
             case PRODUCTO:
-                agregar(r, "Líneas de pedido que usan este producto",
-                        "SELECT id_detalle, id_pedido, cantidad FROM DetallePedido WHERE id_producto = ?",
-                        rs -> "detalle id " + rs.getInt("id_detalle") + " (pedido " + rs.getInt("id_pedido")
-                                + ", cantidad " + rs.getInt("cantidad") + ")", id);
+                agregar(r, "Líneas de pedido que usan este producto", dao.detallesDeProducto(id));
                 break;
             default:
                 throw new IllegalArgumentException("Tipo desconocido: " + tipo);
@@ -88,13 +70,7 @@ public class DependenciasService {
         }
     }
 
-    private static String pedido(java.sql.ResultSet rs) throws java.sql.SQLException {
-        return "pedido id " + rs.getInt("id_pedido") + " (" + rs.getString("tipo_pedido")
-                + ", " + rs.getString("estado") + ")";
-    }
-
-    private static void agregar(List<String> salida, String titulo, String sql, Bd.Mapeador<String> m, int id) {
-        List<String> filas = Bd.consultar(sql, m, id);
+    private static void agregar(List<String> salida, String titulo, List<String> filas) {
         if (filas.isEmpty()) {
             return;
         }

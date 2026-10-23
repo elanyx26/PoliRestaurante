@@ -1,7 +1,5 @@
 package servicios;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,12 +8,15 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import dao.DetallePedidoDAO;
+import dao.DomicilioDAO;
+import dao.HistorialEstadoDAO;
+import dao.PedidoDAO;
 import entidades.DetallePedido;
 import entidades.Domicilio;
 import entidades.Mesa;
 import entidades.Pedido;
 import entidades.Producto;
-import util.Bd;
 import util.CambioEstado;
 import util.Constantes;
 import util.Fechas;
@@ -31,37 +32,11 @@ import util.Validar;
  * editar o quitar sus productos y notas.
  */
 public class PedidoService {
-    private static final String[] COLS = {"id_mesero", "id_cocina", "id_administrador", "id_mesa",
-            "tipo_pedido", "nombre_cliente", "estado", "total", "metodo_pago", "fecha_creacion", "fecha_cierre"};
-
-    private static final String EN_CURSO = "('" + Constantes.PENDIENTE + "','" + Constantes.EN_PREPARACION
-            + "','" + Constantes.LISTO + "')";
+    private final PedidoDAO dao = new PedidoDAO();
+    private final HistorialEstadoDAO historial = new HistorialEstadoDAO();
 
     private static final List<String> TIPOS = Arrays.asList(
             Constantes.TIPO_MESA, Constantes.TIPO_LLEVAR, Constantes.TIPO_DOMICILIO);
-
-    private static Pedido mapear(ResultSet rs) throws SQLException {
-        Pedido p = new Pedido();
-        p.setId_pedido(rs.getInt("id_pedido"));
-        p.setId_mesero(rs.getInt("id_mesero"));
-        p.setId_cocina(rs.getInt("id_cocina"));              // NULL -> 0
-        p.setId_administrador(rs.getInt("id_administrador"));
-        p.setId_mesa(rs.getInt("id_mesa"));
-        p.setTipo_pedido(rs.getString("tipo_pedido"));
-        p.setNombre_cliente(rs.getString("nombre_cliente"));
-        p.setEstado(rs.getString("estado"));
-        p.setTotal(rs.getInt("total"));
-        p.setMetodo_pago(rs.getString("metodo_pago"));
-        p.setFecha_creacion(rs.getString("fecha_creacion"));
-        p.setFecha_cierre(rs.getString("fecha_cierre"));
-        return p;
-    }
-
-    private static Object[] valores(Pedido p) {
-        return new Object[] {Bd.fk(p.getId_mesero()), Bd.fk(p.getId_cocina()), Bd.fk(p.getId_administrador()),
-                Bd.fk(p.getId_mesa()), p.getTipo_pedido(), p.getNombre_cliente(), p.getEstado(), p.getTotal(),
-                p.getMetodo_pago(), p.getFecha_creacion(), p.getFecha_cierre()};
-    }
 
     // ====================================================================
     //  CRUD
@@ -86,7 +61,7 @@ public class PedidoService {
         entidad.setFecha_creacion(Fechas.ahora());
         entidad.setFecha_cierre(null);
 
-        entidad.setId_pedido(Bd.insertar("Pedido", "id_pedido", entidad.getId_pedido(), COLS, valores(entidad)));
+        dao.crear(entidad);
         registrar(entidad.getId_pedido(), Constantes.PENDIENTE);
         if (enMesa) {
             new MesaService().cambiarEstado(entidad.getId_mesa(), Constantes.MESA_OCUPADA);
@@ -104,7 +79,7 @@ public class PedidoService {
     }
 
     public List<Pedido> listar() {
-        return Bd.consultar("SELECT * FROM Pedido ORDER BY id_pedido", PedidoService::mapear);
+        return dao.obtenerTodos();
     }
 
     /**
@@ -121,7 +96,7 @@ public class PedidoService {
         if (!Constantes.TIPO_MESA.equals(existente.getTipo_pedido())) {
             nombre = Validar.texto(nombre, "nombre_cliente");
         }
-        Bd.ejecutar("UPDATE Pedido SET nombre_cliente = ? WHERE id_pedido = ?", nombre, existente.getId_pedido());
+        dao.actualizarNombreCliente(existente.getId_pedido(), nombre);
         return obtenerPorId(existente.getId_pedido());
     }
 
@@ -139,8 +114,8 @@ public class PedidoService {
         }
         new DetallePedidoService().eliminarPorPedido(id_pedido);
         new DomicilioService().eliminarPorPedido(id_pedido);
-        Bd.ejecutar("DELETE FROM HistorialEstado WHERE id_pedido = ?", id_pedido);
-        Bd.eliminar("Pedido", "id_pedido", id_pedido);
+        historial.eliminarPorPedido(id_pedido);
+        dao.eliminar(id_pedido);
         liberarMesaSiCorresponde(p.getId_mesa());
     }
 
@@ -207,7 +182,7 @@ public class PedidoService {
                 && new DomicilioService().obtenerPorPedido(id_pedido) == null) {
             throw new IllegalStateException("El pedido a domicilio requiere sus datos de entrega");
         }
-        Bd.ejecutar("UPDATE Pedido SET enviado_cocina = 1 WHERE id_pedido = ?", id_pedido);
+        dao.marcarEnviadoACocina(id_pedido);
         return obtenerPorId(id_pedido);
     }
 
@@ -220,7 +195,7 @@ public class PedidoService {
         if (!Constantes.PENDIENTE.equals(p.getEstado()) || !estaEnviado(id_pedido)) {
             throw new IllegalStateException("Solo un pedido Pendiente enviado a cocina puede pasar a En preparación");
         }
-        Bd.ejecutar("UPDATE Pedido SET id_cocina = ? WHERE id_pedido = ?", id_cocina, id_pedido);
+        dao.asignarCocina(id_pedido, id_cocina);
         cambiarEstado(id_pedido, Constantes.EN_PREPARACION);
         return obtenerPorId(id_pedido);
     }
@@ -278,8 +253,7 @@ public class PedidoService {
         if (!Constantes.ENTREGADO.equals(p.getEstado())) {
             throw new IllegalStateException("Solo se puede cerrar un pedido que ya fue entregado");
         }
-        Bd.ejecutar("UPDATE Pedido SET metodo_pago = ?, fecha_cierre = ? WHERE id_pedido = ?",
-                metodo, Fechas.ahora(), id_pedido);
+        dao.registrarCierre(id_pedido, metodo, Fechas.ahora());
         cambiarEstado(id_pedido, Constantes.CERRADO);
         liberarMesaSiCorresponde(p.getId_mesa());
         return obtenerPorId(id_pedido);
@@ -291,27 +265,22 @@ public class PedidoService {
 
     /** HU13 / RF-05: cola de cocina, del más antiguo al más reciente. */
     public List<Pedido> colaCocina() {
-        return Bd.consultar("SELECT * FROM Pedido WHERE estado = ? AND enviado_cocina = 1 "
-                + "ORDER BY fecha_creacion, id_pedido", PedidoService::mapear, Constantes.PENDIENTE);
+        return dao.obtenerColaCocina(Constantes.PENDIENTE);
     }
 
     /** HU17: pedidos del mesero que no están entregados, cancelados ni cerrados. */
     public List<Pedido> consultarActivosDeMesero(int id_mesero) {
-        return Bd.consultar("SELECT * FROM Pedido WHERE id_mesero = ? AND estado IN " + EN_CURSO
-                + " ORDER BY fecha_creacion, id_pedido", PedidoService::mapear, id_mesero);
+        return dao.obtenerEnCursoDeMesero(id_mesero);
     }
 
     /** HU10: pedidos anteriores de la mesa, del más reciente al más antiguo. */
     public List<Pedido> historialDeMesa(int id_mesa) {
-        return Bd.consultar("SELECT * FROM Pedido WHERE id_mesa = ? ORDER BY fecha_creacion DESC, id_pedido DESC",
-                PedidoService::mapear, id_mesa);
+        return dao.obtenerPorMesa(id_mesa);
     }
 
     /** RF-15 / RNF-09: fecha y hora de cada cambio de estado del pedido. */
     public List<CambioEstado> historialDeEstados(int id_pedido) {
-        return Bd.consultar("SELECT * FROM HistorialEstado WHERE id_pedido = ? ORDER BY id_historial",
-                rs -> new CambioEstado(rs.getInt("id_pedido"), rs.getString("estado"),
-                        Fechas.parsear(rs.getString("fecha"))), id_pedido);
+        return historial.obtenerPorPedido(id_pedido);
     }
 
     /** HU22 / HU26: cómo ve cocina el pedido (tipo y mesa o nombre del cliente). */
@@ -358,8 +327,7 @@ public class PedidoService {
         exigirAdministrador(id_administrador);
         int cantidad = 0, ventas = 0, envios = 0;
         DomicilioService ds = new DomicilioService();
-        List<Pedido> cerrados = Bd.consultar("SELECT * FROM Pedido WHERE estado = ?",
-                PedidoService::mapear, Constantes.CERRADO);
+        List<Pedido> cerrados = dao.obtenerPorEstado(Constantes.CERRADO);
         for (Pedido p : cerrados) {
             if (enRango(Fechas.parsear(p.getFecha_cierre()), desde, hasta)) {
                 cantidad++;
@@ -411,8 +379,7 @@ public class PedidoService {
 
     /** true si la mesa tiene un pedido que aún no se ha entregado ni cancelado. */
     public boolean tienePedidoEnCurso(int id_mesa) {
-        return id_mesa > 0 && Bd.entero("SELECT COUNT(*) FROM Pedido WHERE id_mesa = ? AND estado IN " + EN_CURSO,
-                id_mesa) > 0;
+        return id_mesa > 0 && dao.contarEnCursoPorMesa(id_mesa) > 0;
     }
 
     /**
@@ -421,10 +388,9 @@ public class PedidoService {
      */
     public void recalcularTotal(int id_pedido) {
         requerir(id_pedido);
-        int total = Bd.entero("SELECT COALESCE(SUM(cantidad * precio_unitario), 0) FROM DetallePedido WHERE id_pedido = ?",
-                id_pedido);
-        total += Bd.entero("SELECT COALESCE(SUM(costo_envio), 0) FROM Domicilio WHERE id_pedido = ?", id_pedido);
-        Bd.ejecutar("UPDATE Pedido SET total = ? WHERE id_pedido = ?", total, id_pedido);
+        int total = new DetallePedidoDAO().sumarSubtotales(id_pedido);
+        total += new DomicilioDAO().sumarCostoEnvio(id_pedido);
+        dao.actualizarTotal(id_pedido, total);
     }
 
     // ====================================================================
@@ -433,7 +399,7 @@ public class PedidoService {
 
     /** Lee el pedido sin cargar sus objetos relacionados. */
     private Pedido cargar(int id_pedido) {
-        return Bd.uno("SELECT * FROM Pedido WHERE id_pedido = ?", PedidoService::mapear, id_pedido);
+        return dao.obtenerPorId(id_pedido);
     }
 
     private Pedido requerir(int id_pedido) {
@@ -453,7 +419,7 @@ public class PedidoService {
     }
 
     private boolean estaEnviado(int id_pedido) {
-        return Bd.entero("SELECT enviado_cocina FROM Pedido WHERE id_pedido = ?", id_pedido) == 1;
+        return dao.estaEnviadoACocina(id_pedido);
     }
 
     private void validarNuevo(Pedido p) {
@@ -483,13 +449,12 @@ public class PedidoService {
 
     /** Cambia el estado y deja constancia de fecha y hora (RF-15). */
     private void cambiarEstado(int id_pedido, String nuevo) {
-        Bd.ejecutar("UPDATE Pedido SET estado = ? WHERE id_pedido = ?", nuevo, id_pedido);
+        dao.actualizarEstado(id_pedido, nuevo);
         registrar(id_pedido, nuevo);
     }
 
     private void registrar(int id_pedido, String estado) {
-        Bd.ejecutar("INSERT INTO HistorialEstado (id_pedido, estado, fecha) VALUES (?, ?, ?)",
-                id_pedido, estado, Fechas.ahora());
+        historial.registrar(id_pedido, estado, Fechas.ahora());
     }
 
     private void liberarMesaSiCorresponde(int id_mesa) {

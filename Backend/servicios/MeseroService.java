@@ -1,10 +1,9 @@
 package servicios;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
+import dao.MeseroDAO;
+import dao.PedidoDAO;
 import entidades.Mesero;
-import util.Bd;
 import util.Constantes;
 import util.Seguridad;
 import util.Validar;
@@ -14,36 +13,20 @@ import util.Validar;
  * Los usuarios desactivados (HU19) conservan su historial pero no pueden ingresar.
  */
 public class MeseroService {
-    private static final String TABLA = "Mesero";
-    private static final String COL_ID = "id_mesero";
-    private static final String[] COLS = {"nombre", "usuario", "contrasena"};
-
-    private static Mesero mapear(ResultSet rs) throws SQLException {
-        Mesero u = new Mesero();
-        u.setId_mesero(rs.getInt("id_mesero"));
-        u.setNombre(rs.getString("nombre"));
-        u.setUsuario(rs.getString("usuario"));
-        u.setContrasena(rs.getString("contrasena"));
-        return u;
-    }
-
-    private static Object[] valores(Mesero u) {
-        return new Object[] {u.getNombre(), u.getUsuario(), u.getContrasena()};
-    }
+    private final MeseroDAO dao = new MeseroDAO();
 
     public Mesero crear(Mesero entidad) {
         validar(entidad, 0);
         proteger(entidad);
-        entidad.setId_mesero(Bd.insertar(TABLA, COL_ID, entidad.getId_mesero(), COLS, valores(entidad)));
-        return entidad;
+        return dao.crear(entidad);
     }
 
     public Mesero obtenerPorId(int id_mesero) {
-        return Bd.uno("SELECT * FROM " + TABLA + " WHERE " + COL_ID + " = ?", MeseroService::mapear, id_mesero);
+        return dao.obtenerPorId(id_mesero);
     }
 
     public List<Mesero> listar() {
-        return Bd.consultar("SELECT * FROM " + TABLA + " ORDER BY " + COL_ID, MeseroService::mapear);
+        return dao.obtenerTodos();
     }
 
     public Mesero actualizar(Mesero entidad) {
@@ -58,18 +41,17 @@ public class MeseroService {
         }
         validar(entidad, entidad.getId_mesero());
         proteger(entidad);
-        Bd.actualizar(TABLA, COL_ID, entidad.getId_mesero(), COLS, valores(entidad));
-        return entidad;
+        return dao.actualizar(entidad);
     }
 
     public void eliminar(int id_mesero) {
         if (obtenerPorId(id_mesero) == null) {
             return;
         }
-        if (Bd.entero("SELECT COUNT(*) FROM Pedido WHERE id_mesero = ?", id_mesero) > 0) {
+        if (new PedidoDAO().contarPorMesero(id_mesero) > 0) {
             throw new IllegalStateException("El mesero tiene pedidos asociados; desactívelo para conservar su historial");
         }
-        Bd.eliminar(TABLA, COL_ID, id_mesero);
+        dao.eliminar(id_mesero);
     }
 
     // ---------------------------------------------------------------- extras
@@ -83,7 +65,7 @@ public class MeseroService {
         if (AutenticacionService.usuarioEnUso(u.getUsuario(), Constantes.ROL_MESERO, id_mesero)) {
             throw new IllegalStateException("Ya existe otro usuario activo con el usuario '" + u.getUsuario() + "'");
         }
-        Bd.ejecutar("UPDATE " + TABLA + " SET activo = 1 WHERE " + COL_ID + " = ?", id_mesero);
+        dao.cambiarActivo(id_mesero, true);
     }
 
     /** HU19: desactiva un usuario conservando su historial de pedidos. */
@@ -91,11 +73,11 @@ public class MeseroService {
         if (obtenerPorId(id_mesero) == null) {
             throw new IllegalArgumentException("No existe un mesero con id " + id_mesero);
         }
-        Bd.ejecutar("UPDATE " + TABLA + " SET activo = 0 WHERE " + COL_ID + " = ?", id_mesero);
+        dao.cambiarActivo(id_mesero, false);
     }
 
     public boolean estaActivo(int id_mesero) {
-        return Bd.entero("SELECT COUNT(*) FROM " + TABLA + " WHERE " + COL_ID + " = ? AND activo = 1", id_mesero) > 0;
+        return dao.estaActivo(id_mesero);
     }
 
     // --------------------------------------------------------------- privados

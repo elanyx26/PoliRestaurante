@@ -2,7 +2,8 @@ Proyecto Poli - Restaurante (Java + MySQL)
 
 ESTRUCTURA
   entidades/    clases del modelo (campos originales + getters/setters)
-  servicios/    lógica de negocio con acceso a MySQL por JDBC (reglas de las historias de usuario)
+  dao/          acceso a datos: un DAO por tabla (solo SQL y CRUD, sin reglas de negocio)
+  servicios/    lógica de negocio (reglas de las historias de usuario); usa los DAO para acceder a MySQL
   util/         conexión a la BD (Conexion, Bd), constantes, validaciones, seguridad
   app/Main.java demostración del flujo completo contra la base de datos
   sql/          script de la base de datos y scripts auxiliares
@@ -15,8 +16,8 @@ PASOS
  2. Descargar el driver JDBC de MySQL y copiar el .jar a lib/  (ver lib/LEEME.txt).
  3. Editar db.properties con su usuario y contraseña de MySQL.
  4. Compilar (JDK 11 o superior):
-      Linux/Mac:  mkdir out && javac -encoding UTF-8 -cp "lib/*" -d out entidades/*.java servicios/*.java util/*.java app/*.java
-      Windows:    mkdir out && javac -encoding UTF-8 -cp "lib/*" -d out entidades\*.java servicios\*.java util\*.java app\*.java
+      Linux/Mac:  mkdir out && javac -encoding UTF-8 -cp "lib/*" -d out entidades/*.java dao/*.java servicios/*.java util/*.java app/*.java
+      Windows:    mkdir out && javac -encoding UTF-8 -cp "lib/*" -d out entidades\*.java dao\*.java servicios\*.java util\*.java app\*.java
  5. Ejecutar la demo (desde esta carpeta, para que lea db.properties):
       Linux/Mac:  java -cp "out:lib/*" app.Main
       Windows:    java -cp "out;lib/*" app.Main
