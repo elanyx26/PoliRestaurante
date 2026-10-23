@@ -50,7 +50,7 @@ public final class Conexion {
         Connection c = DriverManager.getConnection(
                 valor("db.url", "DB_URL", "url", URL_DEFECTO),
                 valor("db.user", "DB_USER", "user", "root"),
-                valor("db.password", "DB_PASSWORD", "password", ""));
+                valor("db.password", "DB_PASSWORD", "password", "Poli123*"));
         if (!preparada) {
             prepararEsquema(c);
             preparada = true;

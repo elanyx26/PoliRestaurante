@@ -1,14 +1,9 @@
+
 {
   "info": {
     "name": "PoliRestaurante REST",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:8080"
-    }
-  ],
   "item": [
     {
       "name": "0. Administradores (crear primero)",
@@ -23,16 +18,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/administradores",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "administradores"
-              ]
-            },
+            "url": "http://localhost:8080/api/administradores",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Admin Poli\",\n  \"usuario\": \"admin\",\n  \"contrasena\": \"Admin123*\"\n}",
@@ -49,16 +35,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/administradores",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "administradores"
-              ]
-            }
+            "url": "http://localhost:8080/api/administradores"
           }
         },
         {
@@ -66,17 +43,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/administradores/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "administradores",
-                "1"
-              ]
-            }
+            "url": "http://localhost:8080/api/administradores/1"
           }
         },
         {
@@ -89,17 +56,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/administradores/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "administradores",
-                "1"
-              ]
-            },
+            "url": "http://localhost:8080/api/administradores/1",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Admin Poli Editado\",\n  \"usuario\": \"admin\"\n}",
@@ -116,18 +73,7 @@
           "request": {
             "method": "PATCH",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/administradores/1/desactivar",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "administradores",
-                "1",
-                "desactivar"
-              ]
-            }
+            "url": "http://localhost:8080/api/administradores/1/desactivar"
           }
         },
         {
@@ -135,18 +81,7 @@
           "request": {
             "method": "PATCH",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/administradores/1/activar",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "administradores",
-                "1",
-                "activar"
-              ]
-            }
+            "url": "http://localhost:8080/api/administradores/1/activar"
           }
         }
       ]
@@ -164,16 +99,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/categorias",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "categorias"
-              ]
-            },
+            "url": "http://localhost:8080/api/categorias",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Bebidas\",\n  \"id_administrador\": 1\n}",
@@ -190,16 +116,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/categorias",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "categorias"
-              ]
-            }
+            "url": "http://localhost:8080/api/categorias"
           }
         },
         {
@@ -207,17 +124,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/categorias/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "categorias",
-                "1"
-              ]
-            }
+            "url": "http://localhost:8080/api/categorias/1"
           }
         },
         {
@@ -230,17 +137,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/categorias/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "categorias",
-                "1"
-              ]
-            },
+            "url": "http://localhost:8080/api/categorias/1",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Bebidas frías\"\n}",
@@ -257,17 +154,7 @@
           "request": {
             "method": "DELETE",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/categorias/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "categorias",
-                "1"
-              ]
-            }
+            "url": "http://localhost:8080/api/categorias/1"
           }
         }
       ]
@@ -285,16 +172,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/productos",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "productos"
-              ]
-            },
+            "url": "http://localhost:8080/api/productos",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Limonada\",\n  \"descripcion\": \"Limonada natural\",\n  \"precio\": 6000,\n  \"id_categoria\": 1,\n  \"id_administrador\": 1,\n  \"disponibilidad\": \"Disponible\"\n}",
@@ -311,16 +189,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/productos",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "productos"
-              ]
-            }
+            "url": "http://localhost:8080/api/productos"
           }
         },
         {
@@ -328,22 +197,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/productos?disponibles=true",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "productos"
-              ],
-              "query": [
-                {
-                  "key": "disponibles",
-                  "value": "true"
-                }
-              ]
-            }
+            "url": "http://localhost:8080/api/productos?disponibles=true"
           }
         },
         {
@@ -351,17 +205,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/productos/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "productos",
-                "1"
-              ]
-            }
+            "url": "http://localhost:8080/api/productos/1"
           }
         },
         {
@@ -374,17 +218,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/productos/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "productos",
-                "1"
-              ]
-            },
+            "url": "http://localhost:8080/api/productos/1",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"precio\": 6500\n}",
@@ -406,18 +240,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/productos/1/disponibilidad",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "productos",
-                "1",
-                "disponibilidad"
-              ]
-            },
+            "url": "http://localhost:8080/api/productos/1/disponibilidad",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"disponibilidad\": \"No disponible\"\n}",
@@ -434,17 +257,7 @@
           "request": {
             "method": "DELETE",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/productos/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "productos",
-                "1"
-              ]
-            }
+            "url": "http://localhost:8080/api/productos/1"
           }
         }
       ]
@@ -462,16 +275,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/mesas",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "mesas"
-              ]
-            },
+            "url": "http://localhost:8080/api/mesas",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"numero\": 1,\n  \"estado\": \"Libre\",\n  \"id_administrador\": 1\n}",
@@ -488,16 +292,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/mesas",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "mesas"
-              ]
-            }
+            "url": "http://localhost:8080/api/mesas"
           }
         },
         {
@@ -505,17 +300,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/mesas/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "mesas",
-                "1"
-              ]
-            }
+            "url": "http://localhost:8080/api/mesas/1"
           }
         },
         {
@@ -528,17 +313,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/mesas/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "mesas",
-                "1"
-              ]
-            },
+            "url": "http://localhost:8080/api/mesas/1",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"numero\": 10\n}",
@@ -560,18 +335,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/mesas/1/estado",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "mesas",
-                "1",
-                "estado"
-              ]
-            },
+            "url": "http://localhost:8080/api/mesas/1/estado",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"estado\": \"Ocupada\"\n}",
@@ -593,18 +357,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/mesas/1/estado",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "mesas",
-                "1",
-                "estado"
-              ]
-            },
+            "url": "http://localhost:8080/api/mesas/1/estado",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"estado\": \"Libre\"\n}",
@@ -621,17 +374,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/mesas/libres",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "mesas",
-                "libres"
-              ]
-            }
+            "url": "http://localhost:8080/api/mesas/libres"
           }
         },
         {
@@ -639,17 +382,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/mesas/ocupadas",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "mesas",
-                "ocupadas"
-              ]
-            }
+            "url": "http://localhost:8080/api/mesas/ocupadas"
           }
         },
         {
@@ -657,17 +390,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/mesas/resumen",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "mesas",
-                "resumen"
-              ]
-            }
+            "url": "http://localhost:8080/api/mesas/resumen"
           }
         },
         {
@@ -675,17 +398,7 @@
           "request": {
             "method": "DELETE",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/mesas/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "mesas",
-                "1"
-              ]
-            }
+            "url": "http://localhost:8080/api/mesas/1"
           }
         }
       ]
@@ -703,16 +416,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/meseros",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "meseros"
-              ]
-            },
+            "url": "http://localhost:8080/api/meseros",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Juan Pérez\",\n  \"usuario\": \"jperez\",\n  \"contrasena\": \"Mesero123*\"\n}",
@@ -729,16 +433,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/meseros",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "meseros"
-              ]
-            }
+            "url": "http://localhost:8080/api/meseros"
           }
         },
         {
@@ -746,17 +441,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/meseros/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "meseros",
-                "1"
-              ]
-            }
+            "url": "http://localhost:8080/api/meseros/1"
           }
         },
         {
@@ -769,17 +454,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/meseros/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "meseros",
-                "1"
-              ]
-            },
+            "url": "http://localhost:8080/api/meseros/1",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Juan P. Editado\",\n  \"usuario\": \"jperez\"\n}",
@@ -796,17 +471,7 @@
           "request": {
             "method": "DELETE",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/meseros/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "meseros",
-                "1"
-              ]
-            }
+            "url": "http://localhost:8080/api/meseros/1"
           }
         }
       ]
@@ -824,16 +489,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/cocina",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "cocina"
-              ]
-            },
+            "url": "http://localhost:8080/api/cocina",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Ana Gómez\",\n  \"usuario\": \"agomez\",\n  \"contrasena\": \"Cocina123*\"\n}",
@@ -850,16 +506,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/cocina",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "cocina"
-              ]
-            }
+            "url": "http://localhost:8080/api/cocina"
           }
         },
         {
@@ -867,17 +514,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/cocina/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "cocina",
-                "1"
-              ]
-            }
+            "url": "http://localhost:8080/api/cocina/1"
           }
         },
         {
@@ -890,17 +527,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/cocina/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "cocina",
-                "1"
-              ]
-            },
+            "url": "http://localhost:8080/api/cocina/1",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Ana G. Editada\",\n  \"usuario\": \"agomez\"\n}",
@@ -917,17 +544,7 @@
           "request": {
             "method": "DELETE",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/cocina/1",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "cocina",
-                "1"
-              ]
-            }
+            "url": "http://localhost:8080/api/cocina/1"
           }
         }
       ]
@@ -940,17 +557,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/roles/usuarios",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "roles",
-                "usuarios"
-              ]
-            }
+            "url": "http://localhost:8080/api/roles/usuarios"
           }
         },
         {
@@ -963,17 +570,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/roles/asignar",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "roles",
-                "asignar"
-              ]
-            },
+            "url": "http://localhost:8080/api/roles/asignar",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"id_administrador\": 1,\n  \"usuario\": \"jperez\",\n  \"nuevo_rol\": \"cocina\"\n}",
@@ -995,17 +592,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/roles/asignar",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "roles",
-                "asignar"
-              ]
-            },
+            "url": "http://localhost:8080/api/roles/asignar",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"id_administrador\": 1,\n  \"usuario\": \"jperez\",\n  \"nuevo_rol\": \"mesero\"\n}",
