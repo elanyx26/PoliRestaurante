@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    username: postgres
+    password: postgres
+
+app:
+  timezone: America/Bogota
+  jwt:
+    secret: clave-de-pruebas-que-supera-los-32-caracteres-0123456789
+    expiration-minutes: 60
+  cors:
+    allowed-origins: http://localhost:3000
+  initial-admin:
+    name: Admin Pruebas
+    email: admin@test.local
+    password: AdminPruebas-123
+  login:
+    max-attempts: 5
+    lock-minutes: 15
+  storage:
+    uploads-dir: ${java.io.tmpdir}/poli-restaurante-test-uploads
