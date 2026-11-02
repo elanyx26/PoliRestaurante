@@ -1,0 +1,13 @@
+# Nada de esto debe entrar a la imagen (sobre todo los secretos).
+.env
+.env.*
+!.env.example
+uploads/
+target/
+.git/
+.gitignore
+.idea/
+.vscode/
+postman/
+deploy/
+*.md
