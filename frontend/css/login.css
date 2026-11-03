@@ -1,0 +1,58 @@
+/* ============================ Login ============================ */
+
+.login { position: relative; z-index: 1; display: grid; grid-template-columns: 1.05fr 1fr; min-height: 100vh; }
+
+/* ---- panel artístico */
+.login-arte {
+  position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(2rem, 6vw, 5rem);
+  background:
+    radial-gradient(600px 420px at 20% 15%, rgba(255, 46, 91, 0.45), transparent 62%),
+    radial-gradient(700px 520px at 90% 90%, rgba(124, 58, 237, 0.55), transparent 65%),
+    linear-gradient(160deg, #1b0f3a, #0b090e);
+  border-right: 1px solid var(--linea);
+}
+.login-arte::before, .login-arte::after {
+  content: ""; position: absolute; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.login-arte::before { width: 520px; height: 520px; right: -180px; top: -140px; animation: girar 60s linear infinite; border-style: dashed; }
+.login-arte::after { width: 340px; height: 340px; left: -120px; bottom: -110px; animation: girar 45s linear infinite reverse; }
+
+.login-llama { width: clamp(90px, 14vw, 150px); margin-bottom: 1.5rem; filter: drop-shadow(0 0 46px var(--brillo)); animation: flotar 7s ease-in-out infinite; }
+.login-arte h2 { font-size: clamp(2.2rem, 4.5vw, 3.6rem); text-wrap: balance; animation: aparecer 0.9s var(--ease) both; }
+.login-arte p { max-width: 34ch; margin: 1rem 0 0; color: rgba(246, 243, 250, 0.75); animation: aparecer 0.9s 0.15s var(--ease) both; }
+
+/* ---- formulario */
+.login-panel { position: relative; display: grid; place-items: center; padding: 5rem 1.25rem 2rem; }
+.volver { position: absolute; top: 1.4rem; left: 1.5rem; color: var(--suave); text-decoration: none; font-size: 0.9rem; font-weight: 700; transition: color 0.25s, transform 0.25s var(--ease); }
+.volver:hover { color: var(--texto); transform: translateX(-4px); }
+
+.login-tarjeta {
+  width: min(100%, 410px); padding: clamp(1.6rem, 4vw, 2.4rem);
+  background: linear-gradient(180deg, rgba(31, 25, 40, 0.9), rgba(22, 18, 29, 0.9));
+  border: 1px solid var(--linea); border-radius: 28px;
+  box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.8);
+  animation: aparecer 0.7s var(--ease) both;
+}
+.login-tarjeta.error { animation: sacudir 0.45s; }
+.login-tarjeta h1 { margin-top: 1.6rem; font-size: 2.3rem; }
+.subtitulo { margin: 0.4rem 0 0.6rem; color: var(--suave); font-size: 0.92rem; }
+
+.con-ojo { position: relative; }
+.con-ojo input { padding-right: 3rem; }
+.ojo {
+  position: absolute; right: 0.4rem; top: 50%; width: 38px; height: 38px; display: grid; place-items: center;
+  transform: translateY(-50%); border: 0; border-radius: 10px; background: transparent; color: var(--suave); cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+.ojo:hover { color: var(--texto); background: rgba(255, 255, 255, 0.06); }
+.ojo svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ojo[aria-pressed="true"] { color: var(--acento); }
+
+.boton-ancho { width: 100%; margin-top: 1.5rem; padding: 0.95rem; font-size: 1rem; }
+
+@media (max-width: 860px) {
+  .login { grid-template-columns: 1fr; }
+  .login-arte { display: none; }
+  .login-panel { padding-top: 4.5rem; }
+}

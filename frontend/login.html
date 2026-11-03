@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b090e">
+  <title>Poli restaurante · Ingresar</title>
+  <link rel="icon" href="img/llama.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/ChelseaMarket-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/login.css">
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+  <main class="login">
+    <aside class="login-arte" aria-hidden="true">
+      <img class="login-llama" src="img/llama.svg" alt="">
+      <h2>Bienvenido de vuelta</h2>
+      <p>Cada pedido cuenta. Entra y mantén la cocina en movimiento.</p>
+    </aside>
+
+    <section class="login-panel">
+      <a class="volver" href="index.html">← Volver al inicio</a>
+
+      <div class="login-tarjeta">
+        <a class="marca" href="index.html" aria-label="Poli restaurante, inicio">
+          <img src="img/llama.svg" alt="" width="38" height="38">
+          <span class="marca-texto"><strong>Poli</strong><small>restaurante</small></span>
+        </a>
+
+        <h1>Ingresar</h1>
+        <p class="subtitulo">Acceso exclusivo para el personal.</p>
+
+        <form id="form-login" novalidate>
+          <label class="campo">
+            <span>Correo</span>
+            <input id="email" name="email" type="email" autocomplete="username" placeholder="tu@correo.com" required autofocus>
+          </label>
+
+          <label class="campo">
+            <span>Contraseña</span>
+            <div class="con-ojo">
+              <input id="password" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required>
+              <button id="ver-clave" class="ojo" type="button" aria-label="Mostrar contraseña" aria-pressed="false">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </label>
+
+          <p id="aviso" class="aviso" role="alert" hidden></p>
+          <button id="btn-entrar" type="submit" class="btn btn-primario boton-ancho">Ingresar</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script type="module" src="js/login.js"></script>
+</body>
+</html>
