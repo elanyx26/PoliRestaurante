@@ -1,5 +1,11 @@
 # Sistema de Gestión de Restaurante
 
+> **Nuevo backend:** la carpeta [`backend-spring/`](./backend-spring/README.md) contiene la versión profesional en Spring Boot + PostgreSQL (JWT, roles, reportes y WebSocket). La carpeta `Backend/` (Java + MySQL) es la versión académica original.
+>
+> **Frontend:** la carpeta [`frontend/`](./frontend/README.md) (HTML + CSS + JavaScript) tiene la portada pública con el menú, el login y las pantallas de mesero, cocina y administrador, con un sistema de diseño compartido.
+>
+> **Publicarlo en internet gratis:** [DESPLIEGUE.md](./DESPLIEGUE.md) (Cloudflare Pages + Render + Neon, sin dominio propio).
+
 Aplicación en **Java** con base de datos **MySQL** para administrar un restaurante: usuarios por rol, mesas, menú (categorías y productos) y el ciclo completo de los pedidos (en mesa, para llevar y a domicilio), desde que el mesero los toma hasta que se cierran y se reportan.
 
 ## Características
