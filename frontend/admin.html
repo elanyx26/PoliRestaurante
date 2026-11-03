@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b090e">
+  <title>Poli restaurante · Administración</title>
+  <link rel="icon" href="img/llama.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/ChelseaMarket-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/panel.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body class="pagina-admin">
+  <header class="barra">
+    <a class="marca" href="index.html" aria-label="Poli restaurante, portada">
+      <img src="img/llama.svg" alt="" width="38" height="38">
+      <span class="marca-texto"><strong>Poli</strong><small>admin</small></span>
+    </a>
+
+    <span id="conexion" class="conexion desconectado" role="status" title="Estado de las notificaciones en vivo">
+      <i aria-hidden="true"></i><span id="conexion-texto">Conectando…</span>
+    </span>
+
+    <div class="barra-derecha">
+      <span id="usuario" class="usuario"></span>
+      <button id="btn-salir" type="button" class="btn btn-fantasma">Salir</button>
+    </div>
+  </header>
+
+  <div class="admin">
+    <nav class="admin-nav" aria-label="Secciones de administración" id="admin-nav">
+      <a class="admin-item" href="#resumen" data-vista="resumen"><span aria-hidden="true">📊</span><span>Resumen</span></a>
+      <a class="admin-item" href="#pedidos" data-vista="pedidos"><span aria-hidden="true">🧾</span><span>Pedidos</span><b class="punto-nuevo" id="punto-pedidos" hidden></b></a>
+      <a class="admin-item" href="#menu" data-vista="menu"><span aria-hidden="true">🍔</span><span>Menú</span></a>
+      <a class="admin-item" href="#mesas" data-vista="mesas"><span aria-hidden="true">🪑</span><span>Mesas</span></a>
+      <a class="admin-item" href="#usuarios" data-vista="usuarios"><span aria-hidden="true">👥</span><span>Usuarios</span></a>
+      <a class="admin-item" href="#configuracion" data-vista="configuracion"><span aria-hidden="true">⚙️</span><span>Configuración</span></a>
+    </nav>
+
+    <main class="admin-main" id="admin-main">
+      <section class="vista" id="vista-resumen" hidden></section>
+      <section class="vista" id="vista-pedidos" hidden></section>
+      <section class="vista" id="vista-menu" hidden></section>
+      <section class="vista" id="vista-mesas" hidden></section>
+      <section class="vista" id="vista-usuarios" hidden></section>
+      <section class="vista" id="vista-configuracion" hidden></section>
+    </main>
+  </div>
+
+  <dialog id="dialogo-admin" class="dialogo" aria-labelledby="dialogo-admin-titulo">
+    <div class="dialogo-caja" id="dialogo-admin-contenido"></div>
+  </dialog>
+  <dialog id="dialogo-confirmar" class="dialogo dialogo-pequeno" aria-labelledby="dialogo-confirmar-titulo">
+    <div class="dialogo-caja" id="dialogo-confirmar-contenido"></div>
+  </dialog>
+
+  <script src="js/config.js"></script>
+  <script src="js/vendor/stomp.umd.min.js"></script>
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>
