@@ -1,0 +1,209 @@
+/* ==========================================================================
+   Sistema de diseño de PoliRestaurante
+   Fondo casi negro, rosa/coral como acento y morado en los detalles.
+   Tipografías: Chelsea Market (títulos) y Comfortaa (texto), incluidas en /fonts.
+   ========================================================================== */
+
+@font-face {
+  font-family: "Chelsea Market";
+  src: url("../fonts/ChelseaMarket-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Comfortaa";
+  src: url("../fonts/Comfortaa-Variable.ttf") format("truetype");
+  font-weight: 300 700;
+  font-display: swap;
+}
+
+:root {
+  --bg: #0b090e;
+  --surface: #16121d;
+  --surface-2: #1f1928;
+  --linea: rgba(255, 255, 255, 0.09);
+  --texto: #f6f3fa;
+  --suave: #a79fb5;
+
+  --acento: #ff2e5b;
+  --acento-fuerte: #e0194b;
+  --brillo: rgba(255, 46, 91, 0.38);
+  --morado: #7c3aed;
+  --morado-oscuro: #2a1659;
+
+  --ok: #2ecc8f;
+  --alerta: #ffb020;
+  --peligro: #ff5468;
+
+  --radio: 20px;
+  --radio-sm: 12px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --fuente-titulo: "Chelsea Market", "Trebuchet MS", system-ui, sans-serif;
+  --fuente-texto: "Comfortaa", "Segoe UI", system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--texto);
+  font-family: var(--fuente-texto);
+  font-size: 1rem;
+  line-height: 1.55;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(900px 520px at 88% -8%, rgba(124, 58, 237, 0.30), transparent 62%),
+    radial-gradient(720px 520px at -12% 28%, rgba(255, 46, 91, 0.15), transparent 62%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+h1, h2, h3 { font-family: var(--fuente-titulo); font-weight: 400; line-height: 1.1; margin: 0; }
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+[hidden] { display: none !important; }
+
+:focus-visible { outline: 3px solid var(--acento); outline-offset: 3px; border-radius: 6px; }
+
+.solo-lector {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* --------------------------------------------------------- buscador y chips */
+.buscador { position: relative; width: min(100%, 300px); }
+.buscador input {
+  width: 100%; padding: 0.75rem 1rem 0.75rem 2.7rem; color: var(--texto); font: inherit;
+  background: var(--surface); border: 1px solid var(--linea); border-radius: 999px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.buscador input:focus { outline: none; border-color: var(--acento); box-shadow: 0 0 0 4px rgba(255, 46, 91, 0.16); }
+.buscador svg { position: absolute; left: 1rem; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); stroke: var(--suave); fill: none; stroke-width: 2; stroke-linecap: round; }
+
+.categorias { display: flex; gap: 0.6rem; margin-bottom: 1.8rem; padding: 0.3rem 0.2rem 0.8rem; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: thin; }
+.chip {
+  flex: none; scroll-snap-align: start; padding: 0.65rem 1.4rem; border: 1px solid var(--linea); border-radius: 999px;
+  background: var(--surface); color: var(--suave); font: 700 0.9rem var(--fuente-texto); cursor: pointer;
+  transition: background 0.3s, color 0.3s, transform 0.25s var(--ease), box-shadow 0.3s, border-color 0.3s;
+}
+.chip:hover { color: var(--texto); transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.25); }
+.chip[aria-pressed="true"] {
+  color: #fff; border-color: transparent;
+  background: linear-gradient(135deg, var(--acento-fuerte), var(--acento));
+  box-shadow: 0 10px 24px -10px var(--brillo);
+}
+
+/* ------------------------------------------------------------------ marca */
+.marca { display: inline-flex; align-items: center; gap: 0.6rem; text-decoration: none; }
+.marca img { width: 38px; height: 38px; filter: drop-shadow(0 4px 12px var(--brillo)); transition: transform 0.4s var(--ease); }
+.marca:hover img { transform: rotate(-8deg) scale(1.08); }
+.marca-texto { display: flex; flex-direction: column; line-height: 1; }
+.marca-texto strong { font-family: var(--fuente-titulo); font-weight: 400; font-size: 1.45rem; }
+.marca-texto small { font-size: 0.62rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--suave); margin-top: 0.2rem; }
+
+/* ---------------------------------------------------------------- botones */
+.btn {
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  padding: 0.8rem 1.6rem;
+  border: 1px solid transparent; border-radius: 999px;
+  font: 700 0.95rem var(--fuente-texto);
+  text-decoration: none; cursor: pointer; user-select: none;
+  transition: transform 0.2s var(--ease), box-shadow 0.3s var(--ease), background 0.3s, border-color 0.3s, opacity 0.2s;
+}
+.btn:active { transform: scale(0.96); }
+.btn:disabled, .btn.cargando { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
+
+.btn-primario {
+  color: #fff;
+  background: linear-gradient(135deg, var(--acento-fuerte), var(--acento));
+  box-shadow: 0 10px 26px -10px var(--brillo);
+}
+.btn-primario:hover { transform: translateY(-2px); box-shadow: 0 16px 34px -10px var(--brillo); }
+
+.btn-fantasma { color: var(--texto); background: transparent; border-color: rgba(255, 255, 255, 0.24); }
+.btn-fantasma:hover { border-color: var(--acento); background: rgba(255, 46, 91, 0.1); transform: translateY(-2px); }
+
+.btn-suave { color: var(--texto); background: var(--surface-2); border-color: var(--linea); }
+.btn-suave:hover { background: #2a2236; }
+
+.btn-ok { color: #05241a; background: var(--ok); }
+.btn-ok:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -12px rgba(46, 204, 143, 0.6); }
+
+.btn.cargando::after {
+  content: ""; width: 1em; height: 1em; margin-left: 0.4rem;
+  border: 2px solid rgba(255, 255, 255, 0.4); border-top-color: #fff; border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+}
+
+/* -------------------------------------------------------------- formularios */
+.campo { display: block; margin-top: 1.1rem; }
+.campo > span { display: block; margin-bottom: 0.4rem; font-size: 0.82rem; font-weight: 700; color: var(--suave); }
+.campo input {
+  width: 100%; padding: 0.85rem 1rem;
+  color: var(--texto); background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--linea); border-radius: var(--radio-sm);
+  font: inherit; transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+}
+.campo input::placeholder { color: #6d647a; }
+.campo input:focus { outline: none; border-color: var(--acento); background: rgba(255, 46, 91, 0.06); box-shadow: 0 0 0 4px rgba(255, 46, 91, 0.16); }
+
+/* ------------------------------------------------------------------- avisos */
+.aviso { margin: 1.1rem 0 0; padding: 0.7rem 0.9rem; border-radius: var(--radio-sm); font-size: 0.88rem; animation: aparecer 0.35s var(--ease); }
+.aviso.error { background: rgba(255, 84, 104, 0.14); color: #ff9fac; border: 1px solid rgba(255, 84, 104, 0.3); }
+.aviso.info { background: rgba(124, 58, 237, 0.16); color: #c8b2ff; border: 1px solid rgba(124, 58, 237, 0.35); }
+
+.toast {
+  position: fixed; left: 50%; bottom: 1.5rem; z-index: 50;
+  max-width: min(92vw, 520px); padding: 0.8rem 1.3rem;
+  background: var(--surface-2); border: 1px solid var(--linea); border-radius: 999px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+  transform: translate(-50%, 140%); opacity: 0;
+  transition: transform 0.45s var(--ease), opacity 0.3s;
+}
+.toast.visible { transform: translate(-50%, 0); opacity: 1; }
+.toast.error { border-color: rgba(255, 84, 104, 0.5); }
+
+/* ---------------------------------------------------------------- esqueleto */
+.esqueleto {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 37%, var(--surface) 63%);
+  background-size: 400% 100%; animation: brillo-carga 1.4s ease infinite;
+  border-radius: var(--radio);
+}
+
+/* ------------------------------------------------ aparición al hacer scroll */
+.js .revelar { opacity: 0; transform: translateY(22px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); transition-delay: var(--retraso, 0ms); }
+.js .revelar.visible { opacity: 1; transform: none; }
+
+/* --------------------------------------------------------- animaciones base */
+@keyframes girar { to { transform: rotate(360deg); } }
+@keyframes aparecer { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes brillo-carga { from { background-position: 100% 0; } to { background-position: 0 0; } }
+@keyframes flotar { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-14px) rotate(1.5deg); } }
+@keyframes sacudir { 0%, 100% { transform: none; } 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+@keyframes latir { 0%, 100% { box-shadow: 0 0 0 0 currentColor; } 70% { box-shadow: 0 0 0 8px transparent; } }
+
+/* ------------------------------------------------------------ brasas (fondo) */
+.brasas { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.brasas span {
+  position: absolute; bottom: -20px; left: var(--x);
+  width: var(--tam); height: var(--tam); border-radius: 50%;
+  background: radial-gradient(circle, #ffb36b, var(--acento) 60%, transparent 70%);
+  opacity: 0; filter: blur(0.4px);
+  animation: subir var(--dur) linear var(--ret) infinite;
+}
+@keyframes subir {
+  0% { transform: translate(0, 0) scale(1); opacity: 0; }
+  10% { opacity: 0.9; }
+  100% { transform: translate(var(--deriva), -105vh) scale(0.3); opacity: 0; }
+}
+
+/* ------------------------------------------------- respeto a "menos movimiento" */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  .brasas { display: none; }
+  .js .revelar { opacity: 1; transform: none; }
+}
