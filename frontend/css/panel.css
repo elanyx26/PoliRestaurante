@@ -1,0 +1,93 @@
+/* ======================== Componentes de las pantallas del personal ======================== */
+
+.barra {
+  position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  padding: 0.7rem clamp(1rem, 3vw, 1.75rem);
+  background: rgba(11, 9, 14, 0.84); backdrop-filter: blur(14px); border-bottom: 1px solid var(--linea);
+}
+.barra-derecha { margin-left: auto; display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+.barra .btn { padding: 0.55rem 1.1rem; font-size: 0.85rem; }
+.usuario { color: var(--suave); font-size: 0.88rem; }
+
+/* estado de las notificaciones en vivo */
+.conexion { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0.85rem; border-radius: 999px; font-size: 0.78rem; font-weight: 700; transition: background 0.4s, color 0.4s; }
+.conexion i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.conexion.conectado { color: var(--ok); background: rgba(46, 204, 143, 0.14); }
+.conexion.conectado i { animation: latir 2s infinite; }
+.conexion.desconectado { color: var(--peligro); background: rgba(255, 84, 104, 0.14); }
+
+/* insignias de estado de un pedido */
+.estado {
+  display: inline-block; padding: 0.2rem 0.75rem; border-radius: 999px; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.03em;
+  border: 1px solid transparent; white-space: nowrap;
+}
+.estado.PENDIENTE { color: #ff9fb3; background: rgba(255, 46, 91, 0.14); border-color: rgba(255, 46, 91, 0.35); }
+.estado.EN_PREPARACION { color: #cdb8ff; background: rgba(124, 58, 237, 0.18); border-color: rgba(124, 58, 237, 0.45); }
+.estado.LISTO { color: #6ee7b7; background: rgba(46, 204, 143, 0.16); border-color: rgba(46, 204, 143, 0.45); animation: respirar 2.2s ease-in-out infinite; }
+.estado.ENTREGADO { color: var(--suave); background: rgba(255, 255, 255, 0.06); border-color: var(--linea); }
+.estado.CANCELADO { color: #ff9aa6; background: rgba(255, 84, 104, 0.1); border-color: rgba(255, 84, 104, 0.25); text-decoration: line-through; }
+@keyframes respirar { 0%, 100% { box-shadow: 0 0 0 0 rgba(46, 204, 143, 0); } 50% { box-shadow: 0 0 0 6px rgba(46, 204, 143, 0.18); } }
+
+/* selector de cantidad  [−] 2 [+] */
+.paso { display: inline-flex; align-items: center; background: rgba(255, 255, 255, 0.06); border: 1px solid var(--linea); border-radius: 999px; }
+.paso button {
+  width: 34px; height: 34px; border: 0; border-radius: 50%; background: transparent; color: var(--texto); font: 700 1.1rem var(--fuente-texto); cursor: pointer;
+  transition: background 0.2s, transform 0.15s var(--ease);
+}
+.paso button:hover:not(:disabled) { background: rgba(255, 46, 91, 0.25); }
+.paso button:active:not(:disabled) { transform: scale(0.85); }
+.paso button:disabled { opacity: 0.35; cursor: not-allowed; }
+.paso output { min-width: 2.2ch; text-align: center; font-weight: 700; font-size: 0.95rem; }
+
+/* ventana de diálogo (detalle de pedido, formularios del administrador…) */
+.dialogo { width: min(720px, 94vw); max-width: none; max-height: 90vh; padding: 0; border: 0; background: transparent; color: var(--texto); overflow: visible; }
+.dialogo::backdrop { background: rgba(5, 3, 8, 0.74); backdrop-filter: blur(7px); opacity: 0; transition: opacity 0.3s; }
+.dialogo.abierto::backdrop { opacity: 1; }
+.dialogo-caja {
+  display: flex; flex-direction: column; max-height: 90vh; overflow: hidden;
+  background: linear-gradient(160deg, #221a31, #120e19); border: 1px solid var(--linea); border-radius: 26px;
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9);
+  opacity: 0; transform: translateY(32px) scale(0.95); transition: opacity 0.3s, transform 0.45s var(--ease);
+}
+.dialogo.abierto .dialogo-caja { opacity: 1; transform: none; }
+.dialogo-cabecera { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; padding: 1.1rem 1.3rem; border-bottom: 1px solid var(--linea); }
+.dialogo-cabecera h2 { font-size: 1.6rem; }
+.dialogo-cabecera .cerrar-x { margin-left: auto; }
+.dialogo-cuerpo { display: grid; gap: 1.2rem; padding: 1.2rem 1.3rem; overflow-y: auto; }
+.dialogo-pie { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.7rem; padding: 1rem 1.3rem; border-top: 1px solid var(--linea); background: rgba(0, 0, 0, 0.18); }
+.cerrar-x {
+  width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--linea); background: rgba(255, 255, 255, 0.05); color: var(--texto); font-size: 1rem; cursor: pointer;
+  transition: transform 0.3s var(--ease), background 0.25s, border-color 0.25s;
+}
+.cerrar-x:hover { transform: rotate(90deg); background: rgba(255, 46, 91, 0.22); border-color: var(--acento); }
+
+/* ---- detalle de un pedido (mesero y administrador) */
+.bloque h3 { margin-bottom: 0.7rem; font-size: 1.15rem; }
+.detalle-linea {
+  display: grid; grid-template-columns: 1fr auto; gap: 0.4rem 0.8rem; align-items: center; padding: 0.8rem 0.9rem; margin-bottom: 0.6rem;
+  background: rgba(255, 255, 255, 0.04); border: 1px solid var(--linea); border-radius: 14px; animation: aparecer 0.35s var(--ease);
+}
+.detalle-linea .nombre { font-weight: 700; }
+.detalle-linea .precio-linea { color: var(--suave); font-size: 0.82rem; }
+.detalle-linea .nota-texto { grid-column: 1 / -1; margin: 0; padding: 0.35rem 0.7rem; border-radius: 10px; background: rgba(255, 176, 32, 0.12); color: #ffd38a; font-size: 0.82rem; }
+.datos-entrega { display: grid; gap: 0.3rem; padding: 0.9rem 1rem; border: 1px solid var(--linea); border-radius: 14px; background: rgba(124, 58, 237, 0.1); font-size: 0.9rem; }
+.resumen-total { display: flex; justify-content: space-between; align-items: baseline; font-size: 1rem; }
+.resumen-total strong { font-family: var(--fuente-titulo); font-size: 1.8rem; font-weight: 400; color: var(--acento); }
+
+.cronologia { position: relative; display: grid; gap: 0.9rem; margin: 0; padding: 0 0 0 1.3rem; list-style: none; }
+.cronologia::before { content: ""; position: absolute; left: 5px; top: 6px; bottom: 6px; width: 2px; background: var(--linea); }
+.cronologia li { position: relative; font-size: 0.88rem; animation: aparecer 0.4s var(--ease) backwards; }
+.cronologia li::before { content: ""; position: absolute; left: -1.3rem; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--acento); box-shadow: 0 0 0 4px rgba(255, 46, 91, 0.18); }
+.cronologia small { display: block; color: var(--suave); }
+.cronologia .comentario { color: #ffd38a; }
+
+.btn-peligro { color: #fff; background: #c4263d; }
+.btn-peligro:hover { background: #dc2f48; transform: translateY(-2px); }
+.dialogo-pequeno { width: min(440px, 94vw); }
+
+/* aparición escalonada de listas dentro de paneles */
+.escalonado > * { animation: aparecer 0.5s var(--ease) backwards; }
+.escalonado > *:nth-child(2) { animation-delay: 0.05s; }
+.escalonado > *:nth-child(3) { animation-delay: 0.1s; }
+.escalonado > *:nth-child(4) { animation-delay: 0.15s; }
+.escalonado > *:nth-child(n + 5) { animation-delay: 0.2s; }
