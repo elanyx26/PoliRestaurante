@@ -1,0 +1,62 @@
+/* ========================= Pantalla de cocina =========================
+   La barra superior y el indicador de conexión están en panel.css (compartido por el personal). */
+
+/* ---- tablero */
+.tablero {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1rem, 2.5vw, 1.8rem);
+  padding: clamp(1rem, 3vw, 1.75rem); align-items: start;
+}
+.columna h2 { display: flex; align-items: center; gap: 0.7rem; margin: 0 0 1rem; font-size: 1.5rem; }
+.cuenta {
+  min-width: 2rem; padding: 0.1rem 0.7rem; text-align: center; border-radius: 999px;
+  background: linear-gradient(135deg, var(--acento-fuerte), var(--acento)); font-size: 1rem; color: #fff;
+  transition: transform 0.3s var(--ease);
+}
+.cuenta.cambio { transform: scale(1.35); }
+.preparacion .cuenta { background: linear-gradient(135deg, #5b21b6, var(--morado)); }
+.lista { display: grid; gap: 1rem; }
+
+.vacio {
+  margin: 0; padding: 2.5rem 1rem; text-align: center; color: var(--suave);
+  border: 1px dashed var(--linea); border-radius: var(--radio); animation: aparecer 0.5s var(--ease);
+}
+
+/* ---- tarjetas de pedido */
+.tarjeta {
+  position: relative; overflow: hidden; padding: 1.1rem 1.2rem 1.2rem;
+  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+  border: 1px solid var(--linea); border-radius: var(--radio);
+  transition: transform 0.4s var(--ease), border-color 0.4s, box-shadow 0.4s, opacity 0.35s;
+  animation: entrar 0.55s var(--ease) both;
+}
+.tarjeta::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--acento); transition: background 0.4s; }
+.preparacion .tarjeta::before { background: var(--morado); }
+.tarjeta:hover { transform: translateY(-3px); border-color: rgba(255, 255, 255, 0.2); }
+.tarjeta.atencion::before { background: var(--alerta); }
+.tarjeta.urgente::before { background: var(--peligro); }
+.tarjeta.urgente { box-shadow: 0 0 0 1px rgba(255, 84, 104, 0.35), 0 18px 40px -24px var(--peligro); }
+.tarjeta.nueva { animation: entrar 0.55s var(--ease) both, destello 2.4s ease-out; }
+.tarjeta.saliendo { opacity: 0; transform: translateX(28px) scale(0.97); pointer-events: none; }
+
+@keyframes entrar { from { opacity: 0; transform: translateY(18px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes destello { 0% { box-shadow: 0 0 0 0 var(--brillo), 0 0 36px 0 var(--brillo); } 100% { box-shadow: 0 0 0 14px transparent, 0 0 0 0 transparent; } }
+
+.tarjeta-cabecera { display: flex; align-items: baseline; gap: 0.8rem; padding-left: 0.4rem; }
+.numero { font-family: var(--fuente-titulo); font-size: 1.8rem; font-weight: 400; }
+.destino { font-weight: 700; font-size: 1rem; }
+.tiempo { display: block; margin: 0.15rem 0 0 0.4rem; font-size: 0.82rem; color: var(--suave); }
+.atencion .tiempo { color: #ffd38a; }
+.urgente .tiempo { color: #ff9fac; font-weight: 700; }
+
+.items { list-style: none; margin: 1rem 0; padding: 0 0 0 0.4rem; display: grid; gap: 0.6rem; }
+.item { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 1.05rem; }
+.cantidad { min-width: 2.4rem; font-weight: 700; color: var(--acento); }
+.nota { flex-basis: 100%; margin: 0; padding: 0.4rem 0.7rem; border-radius: 10px; background: rgba(255, 176, 32, 0.13); border: 1px solid rgba(255, 176, 32, 0.25); color: #ffd38a; font-size: 0.9rem; }
+
+.btn-accion { width: 100%; padding: 0.95rem; font-size: 1rem; }
+
+@media (max-width: 820px) {
+  .tablero { grid-template-columns: 1fr; }
+  .barra-derecha { margin-left: 0; width: 100%; justify-content: space-between; }
+  .usuario { display: none; }
+}

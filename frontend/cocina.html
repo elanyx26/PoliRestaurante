@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b090e">
+  <title>Poli restaurante · Cocina</title>
+  <link rel="icon" href="img/llama.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/ChelseaMarket-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/panel.css">
+  <link rel="stylesheet" href="css/cocina.css">
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+  <header class="barra">
+    <a class="marca" href="index.html" aria-label="Poli restaurante, portada">
+      <img src="img/llama.svg" alt="" width="38" height="38">
+      <span class="marca-texto"><strong>Poli</strong><small>cocina</small></span>
+    </a>
+
+    <span id="conexion" class="conexion desconectado" role="status" title="Estado de las notificaciones en vivo">
+      <i aria-hidden="true"></i><span id="conexion-texto">Conectando…</span>
+    </span>
+
+    <div class="barra-derecha">
+      <button id="btn-sonido" type="button" class="btn btn-suave" aria-pressed="false">🔕 Sonido apagado</button>
+      <span id="usuario" class="usuario"></span>
+      <button id="btn-salir" type="button" class="btn btn-fantasma">Salir</button>
+    </div>
+  </header>
+
+  <main class="tablero">
+    <section class="columna" aria-labelledby="titulo-pendientes">
+      <h2 id="titulo-pendientes">Pendientes <span id="cuenta-pendientes" class="cuenta">0</span></h2>
+      <div id="lista-pendientes" class="lista"></div>
+    </section>
+
+    <section class="columna preparacion" aria-labelledby="titulo-preparacion">
+      <h2 id="titulo-preparacion">En preparación <span id="cuenta-preparacion" class="cuenta">0</span></h2>
+      <div id="lista-preparacion" class="lista"></div>
+    </section>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/vendor/stomp.umd.min.js"></script>
+  <script type="module" src="js/cocina.js"></script>
+</body>
+</html>
