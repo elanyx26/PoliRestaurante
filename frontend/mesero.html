@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b090e">
+  <title>Poli restaurante · Mesero</title>
+  <link rel="icon" href="img/llama.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/ChelseaMarket-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/panel.css">
+  <link rel="stylesheet" href="css/mesero.css">
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+  <header class="barra">
+    <a class="marca" href="index.html" aria-label="Poli restaurante, portada">
+      <img src="img/llama.svg" alt="" width="38" height="38">
+      <span class="marca-texto"><strong>Poli</strong><small>mesero</small></span>
+    </a>
+
+    <span id="conexion" class="conexion desconectado" role="status" title="Estado de las notificaciones en vivo">
+      <i aria-hidden="true"></i><span id="conexion-texto">Conectando…</span>
+    </span>
+
+    <div class="barra-derecha">
+      <button id="btn-sonido" type="button" class="btn btn-suave" aria-pressed="false">🔕 Avisos sin sonido</button>
+      <span id="usuario" class="usuario"></span>
+      <button id="btn-salir" type="button" class="btn btn-fantasma">Salir</button>
+    </div>
+  </header>
+
+  <nav class="pestanas" aria-label="Secciones del mesero">
+    <div class="pestanas-caja" role="tablist">
+      <button id="tab-nuevo" class="pestana" type="button" role="tab" aria-selected="true" aria-controls="panel-nuevo">Nuevo pedido</button>
+      <button id="tab-mios" class="pestana" type="button" role="tab" aria-selected="false" aria-controls="panel-mios">
+        Mis pedidos <span id="insignia-mios" class="insignia" hidden>0</span>
+      </button>
+      <span class="pestana-indicador" aria-hidden="true"></span>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ======================= Nuevo pedido ======================= -->
+    <section id="panel-nuevo" class="panel panel-nuevo" role="tabpanel" aria-labelledby="tab-nuevo">
+      <div class="zona-menu">
+        <div class="menu-barra">
+          <div class="categorias" id="menu-chips" role="group" aria-label="Categorías"></div>
+          <label class="buscador">
+            <span class="solo-lector">Buscar plato</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input id="menu-buscar" type="search" placeholder="Buscar plato…" autocomplete="off">
+          </label>
+        </div>
+        <div class="grilla-menu" id="menu-grilla" aria-live="polite"></div>
+      </div>
+
+      <div class="carrito-velo" id="carrito-velo" hidden></div>
+      <aside class="carrito" id="carrito" aria-label="Pedido actual">
+        <div class="carrito-cabecera">
+          <h2>Pedido actual</h2>
+          <button id="cerrar-carrito" class="cerrar-x solo-movil" type="button" aria-label="Cerrar pedido actual">✕</button>
+        </div>
+
+        <div class="carrito-cuerpo">
+          <div class="tipos" role="group" aria-label="Tipo de pedido">
+            <button type="button" class="tipo" data-tipo="SALON" aria-pressed="true"><span aria-hidden="true">🍽️</span>Salón</button>
+            <button type="button" class="tipo" data-tipo="PARA_LLEVAR" aria-pressed="false"><span aria-hidden="true">🛍️</span>Llevar</button>
+            <button type="button" class="tipo" data-tipo="DOMICILIO" aria-pressed="false"><span aria-hidden="true">🛵</span>Domicilio</button>
+          </div>
+
+          <div id="campo-mesa" class="grupo">
+            <h3>Mesa libre</h3>
+            <div class="mesas-lista" id="mesas-lista"></div>
+          </div>
+
+          <label class="campo" id="campo-cliente" hidden>
+            <span>Nombre del cliente</span>
+            <input id="cliente" type="text" maxlength="120" autocomplete="off" placeholder="Ej. Marta">
+          </label>
+
+          <div id="campo-entrega" class="grupo" hidden>
+            <label class="campo"><span>Dirección de entrega</span><input id="direccion" type="text" maxlength="255" autocomplete="off" placeholder="Calle 1 # 2-3"></label>
+            <div class="dos-columnas">
+              <label class="campo"><span>Teléfono</span><input id="telefono" type="tel" maxlength="30" autocomplete="off" placeholder="3001234567"></label>
+              <label class="campo"><span>Costo de envío</span><input id="envio" type="number" min="0" step="500" value="0" inputmode="numeric"></label>
+            </div>
+            <div class="tipos pagos" role="group" aria-label="Método de pago">
+              <button type="button" class="tipo" data-pago="EFECTIVO_CONTRAENTREGA" aria-pressed="true">💵 Contraentrega</button>
+              <button type="button" class="tipo" data-pago="PAGO_VIRTUAL" aria-pressed="false">💳 Pago virtual</button>
+            </div>
+          </div>
+
+          <div class="grupo">
+            <h3>Productos <span class="contador-items" id="contador-items">0</span></h3>
+            <div class="carrito-items" id="carrito-items"></div>
+          </div>
+        </div>
+
+        <div class="carrito-pie">
+          <dl class="totales">
+            <div><dt>Subtotal</dt><dd id="total-subtotal">$ 0</dd></div>
+            <div id="fila-envio" hidden><dt>Envío</dt><dd id="total-envio">$ 0</dd></div>
+            <div class="total"><dt>Total</dt><dd id="total-final">$ 0</dd></div>
+          </dl>
+          <p id="aviso-pedido" class="aviso error" role="alert" hidden></p>
+          <button id="btn-enviar" class="btn btn-primario boton-ancho" type="button">Enviar pedido</button>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ========================= Mis pedidos ======================== -->
+    <section id="panel-mios" class="panel panel-mios" role="tabpanel" aria-labelledby="tab-mios" hidden>
+      <div class="categorias filtros" id="filtros-pedidos" role="group" aria-label="Filtrar pedidos"></div>
+      <div class="lista-pedidos" id="lista-pedidos" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <button id="fab-carrito" class="fab-carrito" type="button" aria-label="Ver pedido actual">
+    <span aria-hidden="true">🛒</span>
+    <span><b id="fab-cuenta">0</b> productos · <b id="fab-total">$ 0</b></span>
+  </button>
+
+  <dialog id="dialogo-pedido" class="dialogo" aria-labelledby="dialogo-titulo">
+    <div class="dialogo-caja" id="dialogo-contenido"></div>
+  </dialog>
+
+  <script src="js/config.js"></script>
+  <script src="js/vendor/stomp.umd.min.js"></script>
+  <script type="module" src="js/mesero.js"></script>
+</body>
+</html>
