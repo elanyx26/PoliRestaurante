@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b090e">
+  <meta name="description" content="Poli restaurante: conoce nuestro menú.">
+  <title>Poli restaurante · Menú</title>
+  <link rel="icon" href="img/llama.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/ChelseaMarket-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+  <div class="progreso" id="progreso" aria-hidden="true"></div>
+  <div class="pagina">
+    <header class="cabecera" id="cabecera">
+      <div class="contenedor">
+        <a class="marca" href="#inicio" aria-label="Poli restaurante, inicio">
+          <img src="img/llama.svg" alt="" width="38" height="38">
+          <span class="marca-texto"><strong>Poli</strong><small>restaurante</small></span>
+        </a>
+
+        <button class="boton-menu" id="boton-menu" type="button" aria-expanded="false" aria-controls="navegacion" aria-label="Abrir menú de navegación">
+          <span></span><span></span><span></span>
+        </button>
+
+        <nav class="navegacion" id="navegacion" aria-label="Principal">
+          <a href="#inicio">Inicio</a>
+          <a href="#menu">Menú</a>
+          <a href="#servicio">Servicio</a>
+          <a class="btn btn-primario" id="enlace-ingreso" href="login.html">Ingresar</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="inicio">
+        <div class="contenedor">
+          <div class="hero-entrada">
+            <span class="etiqueta">Cocina hecha al momento</span>
+            <h1>Sabores que <em>encienden</em> tu día</h1>
+            <p class="bajada">Platos preparados con ingredientes frescos, servidos en mesa, para llevar o directo a tu puerta. Mira lo que hoy tenemos en la carta.</p>
+            <div class="hero-acciones">
+              <a class="btn btn-primario" href="#menu">Ver menú</a>
+              <a class="btn btn-fantasma" href="#servicio">Cómo servimos</a>
+            </div>
+          </div>
+
+          <div class="escenario" id="escenario" aria-roledescription="carrusel" aria-label="Platos destacados">
+            <div id="diapositivas"></div>
+            <span class="precio-flotante" id="precio-destacado" hidden></span>
+            <span class="nombre-flotante" id="nombre-destacado" aria-live="polite"></span>
+            <div class="carrusel-control" id="carrusel-control" hidden>
+              <button type="button" id="anterior" aria-label="Plato anterior">←</button>
+              <button type="button" id="siguiente" aria-label="Plato siguiente">→</button>
+              <span class="contador" aria-hidden="true"><span id="contador-actual">01</span> <small id="contador-total">/ 01</small></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="seccion hoja" id="menu">
+        <div class="contenedor">
+          <div class="encabezado-seccion revelar">
+            <div>
+              <h2 class="titulo-palabras">Nuestro menú</h2>
+              <p>Elige una categoría o busca tu plato favorito.</p>
+            </div>
+            <label class="buscador">
+              <span class="solo-lector">Buscar en el menú</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input id="busqueda" type="search" placeholder="Buscar plato…" autocomplete="off">
+            </label>
+          </div>
+
+          <div class="categorias" id="categorias" role="group" aria-label="Categorías del menú"></div>
+          <div class="grilla" id="grilla" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <div class="banda-marco" aria-hidden="true">
+        <div class="banda"><div class="banda-pista" id="banda-pista"></div></div>
+      </div>
+
+      <section class="seccion" id="servicio">
+        <div class="contenedor">
+          <div class="encabezado-seccion revelar">
+            <div>
+              <h2 class="titulo-palabras">Pídelo como prefieras</h2>
+              <p>Tres formas de disfrutar la misma cocina.</p>
+            </div>
+          </div>
+          <div class="beneficios">
+            <article class="beneficio revelar">
+              <div class="icono" aria-hidden="true">🍽️</div>
+              <h3>En el salón</h3>
+              <p>Tu mesero toma el pedido y la cocina lo prepara al instante.</p>
+            </article>
+            <article class="beneficio revelar" style="--retraso: 120ms">
+              <div class="icono" aria-hidden="true">🛍️</div>
+              <h3>Para llevar</h3>
+              <p>Pasa por tu pedido listo y caliente, sin esperas innecesarias.</p>
+            </article>
+            <article class="beneficio revelar" style="--retraso: 240ms">
+              <div class="icono" aria-hidden="true">🛵</div>
+              <h3>A domicilio</h3>
+              <p>Lo llevamos a tu puerta con pago contraentrega o virtual.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <span>© <span id="anio"></span> Poli restaurante</span>
+        <a href="login.html">Acceso del personal →</a>
+      </div>
+    </footer>
+  </div>
+
+  <dialog class="detalle" id="detalle" aria-labelledby="detalle-titulo">
+    <div class="detalle-caja">
+      <button class="detalle-cerrar" id="detalle-cerrar" type="button" aria-label="Cerrar detalle">✕</button>
+      <div class="detalle-foto" id="detalle-foto"></div>
+      <div class="detalle-info">
+        <span class="etiqueta detalle-categoria" id="detalle-categoria"></span>
+        <h3 id="detalle-titulo"></h3>
+        <p id="detalle-descripcion"></p>
+        <span class="detalle-precio" id="detalle-precio"></span>
+        <p class="detalle-nota">¿Te antojaste? Pídelo a tu mesero o haz tu pedido para llevar o a domicilio.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="js/config.js"></script>
+  <script type="module" src="js/landing.js"></script>
+</body>
+</html>
